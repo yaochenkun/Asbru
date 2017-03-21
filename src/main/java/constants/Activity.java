@@ -1,7 +1,7 @@
 package constants;
 
 public abstract class Activity {
-	
+	//add by yck	
 	public static final String SingSongIntent = "SingSongIntent";
 	public static final String TurnOnTVIntent = "TurnOnTVIntent";
 	public static final String TakeShowerIntent = "TakeShowerIntent";
