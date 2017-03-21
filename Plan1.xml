@@ -1,0 +1,72 @@
+<plan-library>
+    <library-info title="NewPlanLibrary">
+        <administrative-data original-author="AsbruViewNew"/>
+    </library-info>
+    <domain-defs>
+        <domain name="mainDomain">
+            <not-yet-defined/>
+        </domain>
+    </domain-defs>
+    <plans>
+        <plan-group/>
+        <plan name="Plan A" title="">
+            <plan-body>
+                <subplans type="sequentially">
+                    <wait-for>
+                        <wait-for-group>
+                            <static-plan-pointer plan-name="Plan B"/>
+                        </wait-for-group>
+                    </wait-for>
+                    <plan-activation>
+                        <plan-schema name="Plan B"/>
+                    </plan-activation>
+                    <plan-activation>
+                        <plan-schema name="Plan C"/>
+                    </plan-activation>
+                    <variable-assignment variable="Action1">
+                        <!-- ... -->
+                    </variable-assignment>
+                    <variable-assignment variable="Action2">
+                        <!-- ... -->
+                    </variable-assignment>
+                    <variable-assignment variable="Action0">
+                        <!-- ... -->
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="Plan B" title="">
+            <plan-body>
+                <subplans type="parallel">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <variable-assignment variable="Action1">
+                        <!-- ... -->
+                    </variable-assignment>
+                    <variable-assignment variable="Action7">
+                        <!-- ... -->
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="Plan C" title="">
+            <plan-body>
+                <subplans type="sequentially">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <variable-assignment variable="Action5">
+                        <!-- ... -->
+                    </variable-assignment>
+                    <variable-assignment variable="Action1">
+                        <!-- ... -->
+                    </variable-assignment>
+                    <variable-assignment variable="Action3">
+                        <!-- ... -->
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+    </plans>
+</plan-library>
