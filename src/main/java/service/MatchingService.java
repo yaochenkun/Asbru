@@ -6,7 +6,7 @@ public class MatchingService {
 
 	public static void main(String[] args) {
 		
-		PlanDirector planDirector = new PlanDirector();
+		PlanDirector planDirector = new PlanDirector("morning.xml");
 		planDirector.start();
 	}
 }

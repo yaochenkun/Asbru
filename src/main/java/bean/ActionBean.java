@@ -2,12 +2,12 @@ package bean;
 
 import java.sql.Timestamp;
 
-public class InputBean {
+public class ActionBean {
 	
 	private String name;
 	private Timestamp time;
 	
-	public InputBean(String name, Timestamp time) {
+	public ActionBean(String name, Timestamp time) {
 
 		this.name = name;
 		this.time = time;

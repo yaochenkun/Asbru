@@ -2,16 +2,16 @@ package plan;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.plaf.basic.BasicTreeUI.TreeTraverseAction;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import bean.ActionBean;
 import bean.ResultBean;
 import constants.AsbruAttribute;
 import constants.AsbruNode;
@@ -20,41 +20,100 @@ import constants.Type;
 //plan导演类，驱动解析与计分过程的执行
 public class PlanDirector {
 	
-	private String xmlFilePath = "Plan1.xml";
+	private final String xmlFilePath;
 	
 	//计分常量
-	private int totalScore;
-	private int totalActionNum;
-	private float gainedActionScore;
-	private float penalActionScore;
-	private final float penalActionRate;
+	public static int TOTAL_SCORE;
+	public static int TOTAL_ACTION_NUM;
+	public static float GAINED_ACTION_SCORE;
+	public static float PENAL_ACTION_SCORE;
+	public final static float PENAL_ACTION_RATE = 0.2f;
 	
 	//计划相关变量
 	private Plan rootPlan;
-	private Map<String, Timestamp> inputActionMap;
+	private Map<String, ActionBean> inputActionMap;
 	private Map<String, Plan> expandedPlanMap; //只可能是Plan，而非Action
 	
 	
-	public PlanDirector() {
+	public PlanDirector(String xmlFilePath) {
 		
-		penalActionRate = 0.2f;
-		inputActionMap = new HashMap<String, Timestamp>();
-		expandedPlanMap = new HashMap<String, Plan>();
+		this.xmlFilePath = xmlFilePath;
+		this.inputActionMap = new HashMap<String, ActionBean>();
+		this.expandedPlanMap = new HashMap<String, Plan>();
 	}
 	
 	//初始化
 	public void start(){
 		
-		//readInputActions(); //1.读取数据库得到input
+		//1.读取数据库得到input
+		readInputActions();
 		
-		buildRootPlan(); //2.解析xml得到rootPlan
-		//traverse(rootPlan); //遍历rootPlan,测试用！
-		//rootPlan.execute(); //3.匹配开始!
+		//2.解析xml得到rootPlan
+		buildRootPlan();
+		
+		//3.匹配开始!
+		rootPlan.execute();
 	}
 	
 	//从数据库读入用户输入的动作
 	public void readInputActions() {
 		
+		List<ActionBean> actionBeanList = new ArrayList<ActionBean>();
+		
+		//getting up-seq
+			actionBeanList.add(new ActionBean("enter bathroom", new Timestamp(1)));
+			actionBeanList.add(new ActionBean("wash hands", new Timestamp(2)));
+			actionBeanList.add(new ActionBean("brush teeth", new Timestamp(3)));
+			actionBeanList.add(new ActionBean("wash face", new Timestamp(4)));
+			actionBeanList.add(new ActionBean("leave bathroom", new Timestamp(5)));
+		
+		//breakfast-seq
+			actionBeanList.add(new ActionBean("enter kitchen", new Timestamp(6)));
+		
+			//prepare breakfast-seq
+				actionBeanList.add(new ActionBean("open fridge", new Timestamp(7)));
+				actionBeanList.add(new ActionBean("find food", new Timestamp(8)));
+				actionBeanList.add(new ActionBean("close fridge", new Timestamp(9)));
+				actionBeanList.add(new ActionBean("cook food", new Timestamp(10)));
+		
+			actionBeanList.add(new ActionBean("eat", new Timestamp(11)));
+			actionBeanList.add(new ActionBean("leave kitchen", new Timestamp(12)));
+		
+		//run
+			actionBeanList.add(new ActionBean("run", new Timestamp(13)));
+		
+		//entertainment-par
+			actionBeanList.add(new ActionBean("sing", new Timestamp(14)));
+			actionBeanList.add(new ActionBean("play game", new Timestamp(15)));
+			actionBeanList.add(new ActionBean("watch TV", new Timestamp(16)));
+		
+		actionBeanList.add(new ActionBean("read book", new Timestamp(17)));
+		
+		//cleaning-seq
+			actionBeanList.add(new ActionBean("open window", new Timestamp(18)));
+		
+			//cleaning floor-seq
+				actionBeanList.add(new ActionBean("sweep floor", new Timestamp(19)));
+				actionBeanList.add(new ActionBean("mod floor", new Timestamp(20)));
+			
+			//wipe furniture
+			actionBeanList.add(new ActionBean("wipe furniture", new Timestamp(21)));
+			
+			//empty trash
+			actionBeanList.add(new ActionBean("empty trash", new Timestamp(22)));
+		
+		//washing clothes-seq
+			actionBeanList.add(new ActionBean("enter washroom", new Timestamp(23)));
+			actionBeanList.add(new ActionBean("take dirty clothes", new Timestamp(24)));
+			actionBeanList.add(new ActionBean("wash clothes", new Timestamp(25)));
+			actionBeanList.add(new ActionBean("wring clothes", new Timestamp(26)));
+			actionBeanList.add(new ActionBean("leave washroom", new Timestamp(27)));
+			actionBeanList.add(new ActionBean("sun clothes", new Timestamp(28)));	
+		
+		
+		//存入inputActionMap中
+		for(ActionBean actionBean : actionBeanList)
+			inputActionMap.put(actionBean.getName(), actionBean);
 	}
 	
 	//读取xml文件路径得到rootPlan
@@ -95,7 +154,7 @@ public class PlanDirector {
 	    analyzeNode(plansNode, rootPlan);
 	    
 	    //测试：遍历 
-	    traverse(rootPlan);
+	    //traverse(rootPlan);
 	}
 	
 	//解析node节点，并以parentPlan作为父计划向其中注入解析到的数据
@@ -131,7 +190,7 @@ public class PlanDirector {
 				System.out.println("subplans标签缺少type属性，请添加");
 			}
 		} else if((AsbruNode.all).equals(nodeName)) {
-			(parentPlan.getMandaPlanSet()).add("All"); //parentPlan.demand（表明旗下全部都是强制的子plan）
+			(parentPlan.getMandaPlanSet()).add(AsbruNode.all); //parentPlan.demand（表明旗下全部都是强制的子plan）
 			return; //底层标签，没有内容了， 可以返回了
 		} else if((AsbruNode.static_plan_pointer).equals(nodeName)) {
 			try{
@@ -186,30 +245,5 @@ public class PlanDirector {
 	//向数据库写入计分结果（由plan.execute()中调用）
 	public static void writeResult(ResultBean resultBean){
 		
-	}
-	
-	public int getTotalScore() {
-		return totalScore;
-	}
-	public void setTotalScore(int totalScore) {
-		this.totalScore = totalScore;
-	}
-	public int getTotalActionNum() {
-		return totalActionNum;
-	}
-	public void setTotalActionNum(int totalActionNum) {
-		this.totalActionNum = totalActionNum;
-	}
-	public float getGainedActionScore() {
-		return gainedActionScore;
-	}
-	public void setGainedActionScore(float gainedActionScore) {
-		this.gainedActionScore = gainedActionScore;
-	}
-	public float getPenalActionScore() {
-		return penalActionScore;
-	}
-	public void setPenalActionScore(float penalActionScore) {
-		this.penalActionScore = penalActionScore;
 	}
 }
