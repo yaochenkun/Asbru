@@ -53,12 +53,14 @@ public class Plan extends PlanBase{
 			ResultBean result = subPlan.execute();
 			
 			//1.修正得分并累加得分
-			boolean penalty = false; //是否因时间顺序不对被扣分的标识 
-			if(result.getTime().getTime() >= lasttime.getTime()){ //时间在之后，对的，更新time
-				lasttime = result.getTime();
-			} else { //时间在之前，不对，不更新time，扣分
-				result.setScore(result.getScore() - PlanDirector.PENAL_ACTION_SCORE);
-				penalty = true;
+			boolean penalty = false; //是否因时间顺序不对被扣分的标识
+			if(!(result.getState()).equals(ResultState.CONSIDERED)) { //罚分只针对完成或半完成任务
+				if(result.getTime().getTime() >= lasttime.getTime()){ //时间在之后，对的，更新time
+					lasttime = result.getTime();
+				} else { //时间在之前，不对，不更新time，扣分
+					result.setScore(result.getScore() - PlanDirector.getInstance().getPenalActionScore());
+					penalty = true;
+				}
 			}
 			score += result.getScore();
 			
@@ -83,12 +85,10 @@ public class Plan extends PlanBase{
 			state = ResultState.COMPLETED;
 		else if(state_considered_count == this.subPlanList.size()) //全部未完成
 			state = ResultState.CONSIDERED;
-		
+
 		return new ResultBean(this.name, this.type, score, state, lasttime); //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
 	}
-	
-	
-	
+
 	
 	//与时间顺序无关的执行操作（父plan仅会修正完成状态）
 	ResultBean parExecute(){

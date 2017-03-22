@@ -20,30 +20,39 @@ import constants.Type;
 //plan导演类，驱动解析与计分过程的执行
 public class PlanDirector {
 	
-	private final String xmlFilePath;
+	//单例
+	private static PlanDirector instance;
+	
+	private final String xmlFilePath = "morning.xml";
 	
 	//计分常量
-	public static int TOTAL_SCORE;
-	public static int TOTAL_ACTION_NUM;
-	public static float GAINED_ACTION_SCORE;
-	public static float PENAL_ACTION_SCORE;
-	public final static float PENAL_ACTION_RATE = 0.2f;
+	private final float TOTAL_SCORE = 100.0f; //总分数
+	private final float PENAL_ACTION_RATE = 0.2f; //惩罚率
+	
+	private int totalActionNum = 0; //总action数
+	private float gainedActionScore = 0.0f; //每个action分值
+	private float penalActionScore = 0.0f;  //每个action在时间顺序不对时的惩罚分
 	
 	//计划相关变量
 	private Plan rootPlan;
-	private Map<String, ActionBean> inputActionMap;
+	public static Map<String, ActionBean> inputActionMap; //被action访问
 	private Map<String, Plan> expandedPlanMap; //只可能是Plan，而非Action
 	
 	
-	public PlanDirector(String xmlFilePath) {
+	public PlanDirector() {
 		
-		this.xmlFilePath = xmlFilePath;
-		this.inputActionMap = new HashMap<String, ActionBean>();
+		inputActionMap = new HashMap<String, ActionBean>();
 		this.expandedPlanMap = new HashMap<String, Plan>();
 	}
 	
+	//单例获取
+	public static PlanDirector getInstance() {
+		if(instance == null) instance = new PlanDirector();
+		return instance;
+	}
+	
 	//初始化
-	public void start(){
+	public ResultBean start(){
 		
 		//1.读取数据库得到input
 		readInputActions();
@@ -51,12 +60,15 @@ public class PlanDirector {
 		//2.解析xml得到rootPlan
 		buildRootPlan();
 		
-		//3.匹配开始!
-		rootPlan.execute();
+		//3.计算分数
+		initScore();
+		
+		//4.匹配开始!
+		return rootPlan.execute();		
 	}
 	
 	//从数据库读入用户输入的动作
-	public void readInputActions() {
+	private void readInputActions() {
 		
 		List<ActionBean> actionBeanList = new ArrayList<ActionBean>();
 		
@@ -108,7 +120,7 @@ public class PlanDirector {
 			actionBeanList.add(new ActionBean("wash clothes", new Timestamp(25)));
 			actionBeanList.add(new ActionBean("wring clothes", new Timestamp(26)));
 			actionBeanList.add(new ActionBean("leave washroom", new Timestamp(27)));
-			actionBeanList.add(new ActionBean("sun clothes", new Timestamp(28)));	
+			//actionBeanList.add(new ActionBean("sun clothes", new Timestamp(28)));	
 		
 		
 		//存入inputActionMap中
@@ -117,7 +129,7 @@ public class PlanDirector {
 	}
 	
 	//读取xml文件路径得到rootPlan
-	public void buildRootPlan(){
+	private void buildRootPlan(){
 		
 		SAXReader sax = new SAXReader();
 		File xmlFile = new File(this.xmlFilePath);
@@ -158,7 +170,7 @@ public class PlanDirector {
 	}
 	
 	//解析node节点，并以parentPlan作为父计划向其中注入解析到的数据
-	public void analyzeNode(Element node, Plan parentPlan){
+	private void analyzeNode(Element node, Plan parentPlan){
 		
 		//取节点名字
 		String nodeName = node.getName();
@@ -217,9 +229,10 @@ public class PlanDirector {
 				String actionName = node.attribute(AsbruAttribute.variable).getValue();// action.name
 				(parentPlan.getMandaPlanSet()).add(actionName); //action是最底层，都是强制
 				
-				Action action = new Action(actionName); //构造一个新的plan，但他是空的，他的内容由接下来它递归自己时获取，这里的new的作用
-				 								   //只是为建立与parentPlan的关系
+				Action action = new Action(actionName); //构造一个新的plan，但他是空的，他的内容由接下来它递归自己时获取，这里的new的作用只是为建立与parentPlan的关系
 				(parentPlan.getSubPlanList()).add(action); //加入父plan的列表中	
+				
+				totalActionNum++; //action数增1
 			} catch(Exception e){
 				System.out.println("variable-assignment缺少variable属性，请添加");
 			}
@@ -232,8 +245,14 @@ public class PlanDirector {
 			analyzeNode(subNode, parentPlan);
 	}
 	
+	//计算每个action匹配后的得分与惩罚分
+	private void initScore(){
+		gainedActionScore = TOTAL_SCORE / totalActionNum;
+		penalActionScore  = gainedActionScore * PENAL_ACTION_RATE;
+	}
+	
 	//输出内存结果
-	void traverse(PlanBase plan) {
+	private void traverse(PlanBase plan) {
 
 		System.out.println(plan.toString());
 		if(plan.getType().equals(Type.PLAN)) {
@@ -245,5 +264,29 @@ public class PlanDirector {
 	//向数据库写入计分结果（由plan.execute()中调用）
 	public static void writeResult(ResultBean resultBean){
 		
+	}
+
+	public int getTotalActionNum() {
+		return totalActionNum;
+	}
+
+	public void setTotalActionNum(int totalActionNum) {
+		this.totalActionNum = totalActionNum;
+	}
+
+	public float getGainedActionScore() {
+		return gainedActionScore;
+	}
+
+	public void setGainedActionScore(float gainedActionScore) {
+		this.gainedActionScore = gainedActionScore;
+	}
+
+	public float getPenalActionScore() {
+		return penalActionScore;
+	}
+
+	public void setPenalActionScore(float penalActionScore) {
+		this.penalActionScore = penalActionScore;
 	}
 }
