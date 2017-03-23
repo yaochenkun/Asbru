@@ -46,6 +46,7 @@ public class Plan extends PlanBase{
 		int state_completed_count = 0; //该plan下完成的子plan个数
 		int state_considered_count = 0; //该plan下一点未完成的子plan个数
 		float score = 0; //得分
+		float fullScore = 0; //满分
 		Timestamp lasttime = new Timestamp(0); //完成时间
 		
 		//遍历旗下所有的plan
@@ -63,6 +64,7 @@ public class Plan extends PlanBase{
 				}
 			}
 			score += result.getScore();
+			fullScore += result.getFullScore();
 			
 			//2.修正完成状态
 			if(penalty == false && (result.getState()).equals(ResultState.COMPLETED)){ //已完成
@@ -86,7 +88,7 @@ public class Plan extends PlanBase{
 		else if(state_considered_count == this.subPlanList.size()) //全部未完成
 			state = ResultState.CONSIDERED;
 
-		return new ResultBean(this.name, this.type, score, state, lasttime); //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
+		return new ResultBean(this.name, this.type, score, fullScore, state, lasttime); //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
 	}
 
 	
@@ -96,6 +98,7 @@ public class Plan extends PlanBase{
 		int state_completed_count = 0; //该plan下完成的子plan个数
 		int state_considered_count = 0; //该plan下一点未完成的子plan个数
 		float score = 0; //得分
+		float fullScore = 0; //满分
 		Timestamp lasttime = new Timestamp(0);
 		
 		//遍历旗下所有的plan
@@ -103,10 +106,12 @@ public class Plan extends PlanBase{
 			ResultBean result = subPlan.execute();
 			
 			//0.记录时间
-			lasttime = result.getTime();
+			if(result.getTime().getTime() >= lasttime.getTime()) //时间在之后才更新time
+				lasttime = result.getTime();
 			
-			//1.累加得分
+			//1.累加得分、满分
 			score += result.getScore();
+			fullScore += result.getFullScore();
 			
 			//2.修正完成状态
 			if((result.getState()).equals(ResultState.COMPLETED)){ //已完成
@@ -130,7 +135,7 @@ public class Plan extends PlanBase{
 		else if(state_considered_count == this.subPlanList.size()) //全部未完成
 			state = ResultState.CONSIDERED;
 		
-		return new ResultBean(this.name, this.type, score, state, lasttime); //因为与时间顺序无关，所以时间戳是-1
+		return new ResultBean(this.name, this.type, score, fullScore, state, lasttime); //因为与时间顺序无关，所以时间戳是-1
 	}
 	
 	

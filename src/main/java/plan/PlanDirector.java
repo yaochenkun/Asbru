@@ -26,7 +26,7 @@ public class PlanDirector {
 	private final String xmlFilePath = "morning.xml";
 	
 	//计分常量
-	private final float TOTAL_SCORE = 100.0f; //总分数
+	private final float FULL_SCORE = 100.0f; //总分数
 	private final float PENAL_ACTION_RATE = 0.2f; //惩罚率
 	
 	private int totalActionNum = 0; //总action数
@@ -35,13 +35,13 @@ public class PlanDirector {
 	
 	//计划相关变量
 	private Plan rootPlan;
-	public static Map<String, ActionBean> inputActionMap; //被action访问
+	private Map<String, List<ActionBean>> inputActionMap; //被action访问
 	private Map<String, Plan> expandedPlanMap; //只可能是Plan，而非Action
 	
 	
 	public PlanDirector() {
 		
-		inputActionMap = new HashMap<String, ActionBean>();
+		inputActionMap = new HashMap<String, List<ActionBean>>();
 		this.expandedPlanMap = new HashMap<String, Plan>();
 	}
 	
@@ -95,9 +95,9 @@ public class PlanDirector {
 			actionBeanList.add(new ActionBean("run", new Timestamp(13)));
 		
 		//entertainment-par
-			actionBeanList.add(new ActionBean("sing", new Timestamp(14)));
+			actionBeanList.add(new ActionBean("sing", new Timestamp(16)));
 			actionBeanList.add(new ActionBean("play game", new Timestamp(15)));
-			actionBeanList.add(new ActionBean("watch TV", new Timestamp(16)));
+			actionBeanList.add(new ActionBean("watch TV", new Timestamp(14)));
 		
 		actionBeanList.add(new ActionBean("read book", new Timestamp(17)));
 		
@@ -105,8 +105,8 @@ public class PlanDirector {
 			actionBeanList.add(new ActionBean("open window", new Timestamp(18)));
 		
 			//cleaning floor-seq
-				actionBeanList.add(new ActionBean("sweep floor", new Timestamp(19)));
-				actionBeanList.add(new ActionBean("mod floor", new Timestamp(20)));
+				actionBeanList.add(new ActionBean("sweep floor", new Timestamp(1)));
+				actionBeanList.add(new ActionBean("mod floor", new Timestamp(19)));
 			
 			//wipe furniture
 			actionBeanList.add(new ActionBean("wipe furniture", new Timestamp(21)));
@@ -120,12 +120,17 @@ public class PlanDirector {
 			actionBeanList.add(new ActionBean("wash clothes", new Timestamp(25)));
 			actionBeanList.add(new ActionBean("wring clothes", new Timestamp(26)));
 			actionBeanList.add(new ActionBean("leave washroom", new Timestamp(27)));
-			//actionBeanList.add(new ActionBean("sun clothes", new Timestamp(28)));	
+			actionBeanList.add(new ActionBean("sun clothes", new Timestamp(28)));	
 		
 		
 		//存入inputActionMap中
-		for(ActionBean actionBean : actionBeanList)
-			inputActionMap.put(actionBean.getName(), actionBean);
+		for(ActionBean actionBean : actionBeanList) {
+			String actionName = actionBean.getName();
+			if(!inputActionMap.containsKey(actionName)) //第一次
+				inputActionMap.put(actionName, new ArrayList<ActionBean>());
+
+			inputActionMap.get(actionName).add(actionBean);//追加
+		}
 	}
 	
 	//读取xml文件路径得到rootPlan
@@ -170,6 +175,7 @@ public class PlanDirector {
 	}
 	
 	//解析node节点，并以parentPlan作为父计划向其中注入解析到的数据
+	@SuppressWarnings("unchecked")
 	private void analyzeNode(Element node, Plan parentPlan){
 		
 		//取节点名字
@@ -247,11 +253,12 @@ public class PlanDirector {
 	
 	//计算每个action匹配后的得分与惩罚分
 	private void initScore(){
-		gainedActionScore = TOTAL_SCORE / totalActionNum;
+		gainedActionScore = FULL_SCORE / totalActionNum;
 		penalActionScore  = gainedActionScore * PENAL_ACTION_RATE;
 	}
 	
-	//输出内存结果
+	//输出内存结果(测试用！)
+	@SuppressWarnings("unused")
 	private void traverse(PlanBase plan) {
 
 		System.out.println(plan.toString());
@@ -288,5 +295,13 @@ public class PlanDirector {
 
 	public void setPenalActionScore(float penalActionScore) {
 		this.penalActionScore = penalActionScore;
+	}
+
+	public Map<String, List<ActionBean>> getInputActionMap() {
+		return inputActionMap;
+	}
+
+	public void setInputActionMap(Map<String, List<ActionBean>> inputActionMap) {
+		this.inputActionMap = inputActionMap;
 	}
 }

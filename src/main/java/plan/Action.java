@@ -1,9 +1,10 @@
 package plan;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
-
+import bean.ActionBean;
 import bean.ResultBean;
 import constants.ResultState;
 import constants.Type;
@@ -19,23 +20,26 @@ public class Action extends PlanBase{
 	@Override
 	ResultBean execute() {
 		
+		PlanDirector planDirector = PlanDirector.getInstance();
+		
 		String state; //完成状态
 		float score = 0; //得分
+		float fullScore = planDirector.getGainedActionScore(); //满分
 		Timestamp time = new Timestamp(0);
 		
-		
 		//查看输入动作input中是否有该action， 若有则匹配
-		if((PlanDirector.inputActionMap).containsKey(this.name)){
-			score = PlanDirector.getInstance().getGainedActionScore();
+		Map<String, List<ActionBean>> inputActionMap = planDirector.getInputActionMap();
+		if(inputActionMap.containsKey(this.name) && inputActionMap.get(this.name).size() > 0){
+			score = fullScore;
 			state = ResultState.COMPLETED;
-			time = (PlanDirector.inputActionMap).get(this.name).getTime(); //获取时间
-			(PlanDirector.inputActionMap).remove(this.name); //删除该输入动作，减轻后面查询负担
+			time = inputActionMap.get(this.name).get(0).getTime(); //获取时间
+			inputActionMap.get(this.name).remove(0); //删除该输入动作，减轻后面查询负担
 		} else {
 			score = 0;
 			state = ResultState.CONSIDERED;
 		}
 
-		return new ResultBean(this.name, this.type, score, state, time);
+		return new ResultBean(this.name, this.type, score, fullScore, state, time);
 	}
 
 }

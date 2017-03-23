@@ -8,12 +8,14 @@ public class ResultBean {
 	private String type; //类别：计划/动作
 	private Timestamp time; //完成时间
 	private float score; //得分
+	private float fullScore; //满分
 	private String state; //完成情况
 
-	public ResultBean(String name, String type, float score, String state, Timestamp time) {
+	public ResultBean(String name, String type, float score, float fullScore, String state, Timestamp time) {
 		this.name = name;
 		this.type = type;
 		this.score = score;
+		this.fullScore = fullScore;
 		this.state = state;
 		this.time = time;
 	}
@@ -21,7 +23,7 @@ public class ResultBean {
 	@Override
 	public String toString() {
 
-		String res = "名称=" + name + ", 类型=" + type + ", 完成情况=" + state + ", 得分=" + score + ", 时间=" + time;
+		String res = "名称=" + name + ", 类型=" + type + ", 完成情况=" + state + ", 得分=" + score + ", 满分=" + fullScore + ", 时间=" + time;
 		return res;
 	}
 
@@ -58,5 +60,10 @@ public class ResultBean {
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+	public float getFullScore() {
+		return fullScore;
+	}
+	public void setFullScore(float fullScore) {
+		this.fullScore = fullScore;
+	}
 }
