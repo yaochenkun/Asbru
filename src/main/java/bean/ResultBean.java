@@ -4,21 +4,13 @@ import java.sql.Timestamp;
 
 public class ResultBean {
 	
+	private int id; //编号
 	private String name; //名称
 	private String type; //类别：计划/动作
-	private Timestamp time; //完成时间
 	private float score; //得分
 	private float fullScore; //满分
 	private String state; //完成情况
-
-	public ResultBean(String name, String type, float score, float fullScore, String state, Timestamp time) {
-		this.name = name;
-		this.type = type;
-		this.score = score;
-		this.fullScore = fullScore;
-		this.state = state;
-		this.time = time;
-	}
+	private Timestamp time; //完成时间
 	
 	@Override
 	public String toString() {
@@ -27,7 +19,13 @@ public class ResultBean {
 		return res;
 	}
 
+	public int getId() {
+		return id;
+	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;

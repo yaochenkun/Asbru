@@ -88,7 +88,15 @@ public class Plan extends PlanBase{
 		else if(state_considered_count == this.subPlanList.size()) //全部未完成
 			state = ResultState.CONSIDERED;
 
-		return new ResultBean(this.name, this.type, score, fullScore, state, lasttime); //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
+		ResultBean resultBean = new ResultBean();
+		resultBean.setName(this.name);
+		resultBean.setType(this.type);
+		resultBean.setScore(score);
+		resultBean.setFullScore(fullScore);
+		resultBean.setState(state);
+		resultBean.setTime(lasttime);
+		
+		return resultBean; //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
 	}
 
 	
@@ -135,7 +143,15 @@ public class Plan extends PlanBase{
 		else if(state_considered_count == this.subPlanList.size()) //全部未完成
 			state = ResultState.CONSIDERED;
 		
-		return new ResultBean(this.name, this.type, score, fullScore, state, lasttime); //因为与时间顺序无关，所以时间戳是-1
+		ResultBean resultBean = new ResultBean();
+		resultBean.setName(this.name);
+		resultBean.setType(this.type);
+		resultBean.setScore(score);
+		resultBean.setFullScore(fullScore);
+		resultBean.setState(state);
+		resultBean.setTime(lasttime);
+		
+		return resultBean; //因为与时间顺序无关，所以时间戳是-1
 	}
 	
 	

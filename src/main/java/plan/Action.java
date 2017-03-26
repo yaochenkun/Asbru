@@ -39,7 +39,15 @@ public class Action extends PlanBase{
 			state = ResultState.CONSIDERED;
 		}
 
-		return new ResultBean(this.name, this.type, score, fullScore, state, time);
+		ResultBean resultBean = new ResultBean();
+		resultBean.setName(this.name);
+		resultBean.setType(this.type);
+		resultBean.setScore(score);
+		resultBean.setFullScore(fullScore);
+		resultBean.setState(state);
+		resultBean.setTime(time);
+
+		return resultBean;
 	}
 
 }
