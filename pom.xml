@@ -6,42 +6,12 @@
 	<version>1.0</version>
 	<name>asbru</name>
 
-	<repositories>
-		<repository>
-			<id>asbru</id>
-			<url>file://${project.basedir}/repo</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>9.0.6.v20130930</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>9.0.6.v20130930</version>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.10</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -60,14 +30,22 @@
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
 		</dependency>
+		<dependency>
+		  <groupId>org.mybatis</groupId>
+		  <artifactId>mybatis</artifactId>
+		  <version>3.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.6</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>3.0.1</version>
+		</dependency>
 	</dependencies>
-
-	<properties>
-		<property name="disableRequestSignatureCheck" value="false" />
-		<property name="supportedApplicationIds" value="" />
-		<property name="timestampTolerance" value="150" />
-	</properties>
-
 	<build>
 		<finalName>asbru</finalName>
 		<pluginManagement>
@@ -79,37 +57,6 @@
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
-					</configuration>
-				</plugin>
-
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.2.1</version>
-					<configuration>
-						<mainClass>Launcher</mainClass>
-						<systemProperties>
-							<systemProperty>
-								<key>javax.net.ssl.keyStore</key>
-								<value>/insert/your/path/java-keystore.jks</value>
-							</systemProperty>
-							<systemProperty>
-								<key>javax.net.ssl.keyStorePassword</key>
-								<value>insert_your_password</value>
-							</systemProperty>
-							<systemProperty>
-								<key>com.amazon.speech.speechlet.servlet.disableRequestSignatureCheck</key>
-								<value>${disableRequestSignatureCheck}</value>
-							</systemProperty>
-							<systemProperty>
-								<key>com.amazon.speech.speechlet.servlet.supportedApplicationIds</key>
-								<value>${supportedApplicationIds}</value>
-							</systemProperty>
-							<systemProperty>
-								<key>com.amazon.speech.speechlet.servlet.timestampTolerance</key>
-								<value>${timestampTolerance}</value>
-							</systemProperty>
-						</systemProperties>
 					</configuration>
 				</plugin>
 			</plugins>

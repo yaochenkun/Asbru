@@ -56,8 +56,8 @@ public class Plan extends PlanBase{
 			//1.修正得分并累加得分
 			boolean penalty = false; //是否因时间顺序不对被扣分的标识
 			if(!(result.getState()).equals(ResultState.CONSIDERED)) { //罚分只针对完成或半完成任务
-				if(result.getTime().getTime() >= lasttime.getTime()){ //时间在之后，对的，更新time
-					lasttime = result.getTime();
+				if(result.getFinishTime().getTime() >= lasttime.getTime()){ //时间在之后，对的，更新time
+					lasttime = result.getFinishTime();
 				} else { //时间在之前，不对，不更新time，扣分
 					result.setScore(result.getScore() - PlanDirector.getInstance().getPenalActionScore());
 					penalty = true;
@@ -77,8 +77,7 @@ public class Plan extends PlanBase{
 			}
 			
 			//3.把Result写入数据库
-			//测试用！
-			System.out.println(result.toString());
+			writeResult(result);
 		}
 		
 		//4.包装： 得分+完成状态，生成当前这个父plan的result
@@ -94,7 +93,7 @@ public class Plan extends PlanBase{
 		resultBean.setScore(score);
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
-		resultBean.setTime(lasttime);
+		resultBean.setFinishTime(lasttime);
 		
 		return resultBean; //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
 	}
@@ -114,8 +113,8 @@ public class Plan extends PlanBase{
 			ResultBean result = subPlan.execute();
 			
 			//0.记录时间
-			if(result.getTime().getTime() >= lasttime.getTime()) //时间在之后才更新time
-				lasttime = result.getTime();
+			if(result.getFinishTime().getTime() >= lasttime.getTime()) //时间在之后才更新time
+				lasttime = result.getFinishTime();
 			
 			//1.累加得分、满分
 			score += result.getScore();
@@ -132,8 +131,7 @@ public class Plan extends PlanBase{
 			}
 			
 			//3.把Result写入数据库
-			//测试用！
-			System.out.println(result.toString());
+			writeResult(result);
 		}
 		
 		//包装 得分+完成状态，生成当前这个父plan的result
@@ -149,7 +147,7 @@ public class Plan extends PlanBase{
 		resultBean.setScore(score);
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
-		resultBean.setTime(lasttime);
+		resultBean.setFinishTime(lasttime);
 		
 		return resultBean; //因为与时间顺序无关，所以时间戳是-1
 	}

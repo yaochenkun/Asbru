@@ -1,7 +1,13 @@
 package plan;
 
 
+import java.sql.Timestamp;
+
+import org.apache.ibatis.session.SqlSession;
+
 import bean.ResultBean;
+import mapper.ResultMapper;
+import mapper.SqlSessionHelper;
 
 //计划基类
 public abstract class PlanBase {
@@ -26,6 +32,24 @@ public abstract class PlanBase {
 	public void setType(String type) {
 		this.type = type;
 	} 
+	
+	//向数据库写入计分结果
+	public void writeResult(ResultBean resultBean){
+    	
+		SqlSession session = null;
+		try {
+			session = SqlSessionHelper.getSessionFactory().openSession();
+			ResultMapper mapper = session.getMapper(ResultMapper.class);
+			mapper.addResultBean(resultBean);
+
+			session.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+	
 	
 	@Override
 	public String toString() {

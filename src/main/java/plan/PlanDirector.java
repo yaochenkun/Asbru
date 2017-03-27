@@ -1,12 +1,17 @@
 package plan;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -16,6 +21,8 @@ import bean.ResultBean;
 import constants.AsbruAttribute;
 import constants.AsbruNode;
 import constants.Type;
+import mapper.ActionMapper;
+import mapper.SqlSessionHelper;
 
 //plan导演类，驱动解析与计分过程的执行
 public class PlanDirector {
@@ -47,15 +54,16 @@ public class PlanDirector {
 	
 	//单例获取
 	public static PlanDirector getInstance() {
-		if(instance == null) instance = new PlanDirector();
+		if(instance == null) 
+			instance = new PlanDirector();
 		return instance;
 	}
 	
 	//初始化
-	public ResultBean start(){
+	public void start(Timestamp beginTime, Timestamp endTime){
 		
 		//1.读取数据库得到input
-		readInputActions();
+		readInputActions(beginTime, endTime);
 		
 		//2.解析xml得到rootPlan
 		buildRootPlan();
@@ -63,73 +71,42 @@ public class PlanDirector {
 		//3.计算分数
 		initScore();
 		
-		//4.匹配开始!
-		return rootPlan.execute();		
+		//4.匹配! 
+		ResultBean finalResult = rootPlan.execute();
+		
+		//5.写入最终结果
+		rootPlan.writeResult(finalResult);	
 	}
 	
 	//从数据库读入用户输入的动作
-	private void readInputActions() {
+	private void readInputActions(Timestamp beginTime, Timestamp endTime) {
 		
-		List<ActionBean> actionBeanList = new ArrayList<ActionBean>();
+		SqlSession session = null;
+		List<ActionBean> actionBeanList = null;
+		try {
+			session = SqlSessionHelper.getSessionFactory().openSession();
+			ActionMapper mapper = session.getMapper(ActionMapper.class);
+			actionBeanList = mapper.selectActionsByPeriod(beginTime, endTime);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
 		
-		//getting up-seq
-			actionBeanList.add(new ActionBean("enter bathroom", new Timestamp(1)));
-			actionBeanList.add(new ActionBean("wash hands", new Timestamp(2)));
-			actionBeanList.add(new ActionBean("brush teeth", new Timestamp(3)));
-			actionBeanList.add(new ActionBean("wash face", new Timestamp(4)));
-			actionBeanList.add(new ActionBean("leave bathroom", new Timestamp(5)));
-		
-		//breakfast-seq
-			actionBeanList.add(new ActionBean("enter kitchen", new Timestamp(6)));
-		
-			//prepare breakfast-seq
-				actionBeanList.add(new ActionBean("open fridge", new Timestamp(7)));
-				actionBeanList.add(new ActionBean("find food", new Timestamp(8)));
-				actionBeanList.add(new ActionBean("close fridge", new Timestamp(9)));
-				actionBeanList.add(new ActionBean("cook food", new Timestamp(10)));
-		
-			actionBeanList.add(new ActionBean("eat", new Timestamp(11)));
-			actionBeanList.add(new ActionBean("leave kitchen", new Timestamp(12)));
-		
-		//run
-			actionBeanList.add(new ActionBean("run", new Timestamp(13)));
-		
-		//entertainment-par
-			actionBeanList.add(new ActionBean("sing", new Timestamp(16)));
-			actionBeanList.add(new ActionBean("play game", new Timestamp(15)));
-			actionBeanList.add(new ActionBean("watch TV", new Timestamp(14)));
-		
-		actionBeanList.add(new ActionBean("read book", new Timestamp(17)));
-		
-		//cleaning-seq
-			actionBeanList.add(new ActionBean("open window", new Timestamp(18)));
-		
-			//cleaning floor-seq
-				actionBeanList.add(new ActionBean("sweep floor", new Timestamp(1)));
-				actionBeanList.add(new ActionBean("mod floor", new Timestamp(19)));
-			
-			//wipe furniture
-			actionBeanList.add(new ActionBean("wipe furniture", new Timestamp(21)));
-			
-			//empty trash
-			actionBeanList.add(new ActionBean("empty trash", new Timestamp(22)));
-		
-		//washing clothes-seq
-			actionBeanList.add(new ActionBean("enter washroom", new Timestamp(23)));
-			actionBeanList.add(new ActionBean("take dirty clothes", new Timestamp(24)));
-			actionBeanList.add(new ActionBean("wash clothes", new Timestamp(25)));
-			actionBeanList.add(new ActionBean("wring clothes", new Timestamp(26)));
-			actionBeanList.add(new ActionBean("leave washroom", new Timestamp(27)));
-			actionBeanList.add(new ActionBean("sun clothes", new Timestamp(28)));	
-		
+//		for(ActionBean actionBean : actionBeanList) {
+//			System.out.println(actionBean.getId() + "," + actionBean.getName() + "," + actionBean.getTime());
+//		}
+
 		
 		//存入inputActionMap中
-		for(ActionBean actionBean : actionBeanList) {
-			String actionName = actionBean.getName();
-			if(!inputActionMap.containsKey(actionName)) //第一次
-				inputActionMap.put(actionName, new ArrayList<ActionBean>());
-
-			inputActionMap.get(actionName).add(actionBean);//追加
+		if(actionBeanList != null) {
+			for(ActionBean actionBean : actionBeanList) {
+				String actionName = actionBean.getName();
+				if(!inputActionMap.containsKey(actionName)) //第一次
+					inputActionMap.put(actionName, new ArrayList<ActionBean>());
+	
+				inputActionMap.get(actionName).add(actionBean);//追加
+			}
 		}
 	}
 	
@@ -266,11 +243,6 @@ public class PlanDirector {
 			for (PlanBase subPlan : ((Plan) plan).getSubPlanList())
 				traverse(subPlan);
 		}
-	}
-	
-	//向数据库写入计分结果（由plan.execute()中调用）
-	public static void writeResult(ResultBean resultBean){
-		
 	}
 
 	public int getTotalActionNum() {

@@ -7,18 +7,6 @@ public class ActionBean {
 	private int id;
 	private String name;
 	private Timestamp time;
-
-	public ActionBean() {
-		
-	}
-	
-	//≤‚ ‘”√£°÷Æ∫Û…æ≥˝
-	public ActionBean(String name, Timestamp time) {
-		super();
-		this.name = name;
-		this.time = time;
-	}
-	
 	
 	public int getId() {
 		return id;

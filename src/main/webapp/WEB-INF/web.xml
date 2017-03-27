@@ -5,13 +5,12 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
   <servlet>
-  	<servlet-name>RecordActivityServlet</servlet-name>
-  	<display-name>RecordActivityServlet</display-name>
-  	<description></description>
-  	<servlet-class>adl.RecordActivityServlet</servlet-class>
+  	<servlet-name>QueryActivityServlet</servlet-name>
+  	<display-name>QueryActivityServlet</display-name>
+  	<servlet-class>service.QueryActivityServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>RecordActivityServlet</servlet-name>
-  	<url-pattern>/record_activity</url-pattern>
+  	<servlet-name>QueryActivityServlet</servlet-name>
+  	<url-pattern>/query_activity</url-pattern>
   </servlet-mapping>
 </web-app>

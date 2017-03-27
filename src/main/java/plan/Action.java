@@ -25,14 +25,14 @@ public class Action extends PlanBase{
 		String state; //完成状态
 		float score = 0; //得分
 		float fullScore = planDirector.getGainedActionScore(); //满分
-		Timestamp time = new Timestamp(0);
+		Timestamp finishTime = new Timestamp(0);
 		
 		//查看输入动作input中是否有该action， 若有则匹配
 		Map<String, List<ActionBean>> inputActionMap = planDirector.getInputActionMap();
 		if(inputActionMap.containsKey(this.name) && inputActionMap.get(this.name).size() > 0){
 			score = fullScore;
 			state = ResultState.COMPLETED;
-			time = inputActionMap.get(this.name).get(0).getTime(); //获取时间
+			finishTime = inputActionMap.get(this.name).get(0).getTime(); //获取时间
 			inputActionMap.get(this.name).remove(0); //删除该输入动作，减轻后面查询负担
 		} else {
 			score = 0;
@@ -45,7 +45,7 @@ public class Action extends PlanBase{
 		resultBean.setScore(score);
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
-		resultBean.setTime(time);
+		resultBean.setFinishTime(finishTime);
 
 		return resultBean;
 	}

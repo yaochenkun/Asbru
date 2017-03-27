@@ -10,12 +10,13 @@ public class ResultBean {
 	private float score; //得分
 	private float fullScore; //满分
 	private String state; //完成情况
-	private Timestamp time; //完成时间
+	private Timestamp finishTime; //完成时间
+	
 	
 	@Override
 	public String toString() {
 
-		String res = "名称=" + name + ", 类型=" + type + ", 完成情况=" + state + ", 得分=" + score + ", 满分=" + fullScore + ", 时间=" + time;
+		String res = "名称=" + name + ", 类型=" + type + ", 完成情况=" + state + ", 得分=" + score + ", 满分=" + fullScore + ", 时间=" + finishTime;
 		return res;
 	}
 
@@ -40,11 +41,11 @@ public class ResultBean {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public Timestamp getTime() {
-		return time;
+	public Timestamp getFinishTime() {
+		return finishTime;
 	}
-	public void setTime(Timestamp time) {
-		this.time = time;
+	public void setFinishTime(Timestamp finishTime) {
+		this.finishTime = finishTime;
 	}
 	public float getScore() {
 		return score;
