@@ -13,10 +13,10 @@ import bean.ResultBean;
 
 public interface ResultMapper {
 	
-	@Insert("insert into result(id, name, type, score, fullScore, state, finishTime) values(#{id}, #{name}, #{type}, #{score}, #{fullScore}, #{state}, #{finishTime})")
+	@Insert("INSERT INTO result (id, name, type, score, fullScore, state, finishTime, taskId) VALUES (#{id}, #{name}, #{type}, #{score}, #{fullScore}, #{state}, #{finishTime}, #{taskId})")
 	@Options(useGeneratedKeys = true)
 	void addResultBean(ResultBean resultBean);
 	
-	@Select("select * from result where finishTime between #{param1} and #{param2}")
-	List<ResultBean> selectResultBeanByPeriod(Timestamp beginTime, Timestamp endTime);
+	@Select("select * from result where taskId = #{param1} and finishTime between #{param2} and #{param3}")
+	List<ResultBean> selectResultBeanByPeriod(int taskId, Timestamp beginTime, Timestamp endTime);
 }

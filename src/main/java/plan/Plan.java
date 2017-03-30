@@ -11,6 +11,7 @@ import constants.AsbruNode;
 import constants.Order;
 import constants.ResultState;
 import constants.Type;
+import dao.ResultDAO;
 
 //计划类
 public class Plan extends PlanBase{
@@ -29,29 +30,29 @@ public class Plan extends PlanBase{
 	}
 	
 	@Override
-	ResultBean execute() {
+	ResultBean execute(int taskId, Timestamp beginTime) {
 		
 		ResultBean resultBean;
 		if((Order.SEQUENTIALLY).equals(this.order))
-			resultBean = seqExecute();
+			resultBean = seqExecute(taskId, beginTime);
 		else
-			resultBean = parExecute();
+			resultBean = parExecute(taskId, beginTime);
 		
 		return resultBean;
 	}
 	
 	//与时间顺序有关的执行操作（父plan会根据时间顺序对不对修正得分 + 另外修正完成状态）
-	ResultBean seqExecute(){
+	ResultBean seqExecute(int taskId, Timestamp beginTime){
 		
 		int state_completed_count = 0; //该plan下完成的子plan个数
 		int state_considered_count = 0; //该plan下一点未完成的子plan个数
 		float score = 0; //得分
 		float fullScore = 0; //满分
-		Timestamp lasttime = new Timestamp(0); //完成时间
-		
+		Timestamp lasttime = beginTime; //完成时间
+
 		//遍历旗下所有的plan
 		for(PlanBase subPlan : this.subPlanList) {
-			ResultBean result = subPlan.execute();
+			ResultBean result = subPlan.execute(taskId, beginTime);
 			
 			//1.修正得分并累加得分
 			boolean penalty = false; //是否因时间顺序不对被扣分的标识
@@ -66,27 +67,32 @@ public class Plan extends PlanBase{
 			score += result.getScore();
 			fullScore += result.getFullScore();
 			
-			//2.修正完成状态
-			if(penalty == false && (result.getState()).equals(ResultState.COMPLETED)){ //已完成
-				state_completed_count++;
-			} else if(!(this.mandaPlanSet).contains(AsbruNode.all)
-				   && !(this.mandaPlanSet).contains(subPlan.getName())) { //虽然subPlan未完成，但它不是强制的，也算是完成了，但得分是不会加的了
-				state_completed_count++; 
-			} else if((result.getState()).equals(ResultState.CONSIDERED)){ //未完成
-				state_considered_count++;
+			//2.修正当前subplan的完成状态（非强制计划不会影响完成状态）
+			if((this.mandaPlanSet).contains(AsbruNode.all) || (this.mandaPlanSet).contains(subPlan.getName())){
+				if(	penalty == false && (result.getState()).equals(ResultState.COMPLETED)){ //完成且是强制的计划才计数，否则不作数
+					state_completed_count++;
+				} else if((result.getState()).equals(ResultState.CONSIDERED)){ //未完成
+					state_considered_count++;
+				}
 			}
 			
 			//3.把Result写入数据库
-			writeResult(result);
+			ResultDAO.write(result);
 		}
 		
-		//4.包装： 得分+完成状态，生成当前这个父plan的result
+		//4.根据子plan的完成数量最终确定这个父plan的完成状态
+		//获得父plan的强制计划数量
+		int expectedCompletedCount = mandaPlanSet.size(); 
+		if(mandaPlanSet.contains(AsbruNode.all)) 
+			expectedCompletedCount = subPlanList.size();
+
 		String state = ResultState.ACTIVATED; //初始化为部分完成
-		if(state_completed_count == this.subPlanList.size()) //全部完成
+		if(state_completed_count == expectedCompletedCount) //全部完成
 			state = ResultState.COMPLETED;
-		else if(state_considered_count == this.subPlanList.size()) //全部未完成
+		else if(state_considered_count == expectedCompletedCount) //全部未完成
 			state = ResultState.CONSIDERED;
 
+		//5.包装： 得分+完成状态，生成当前这个父plan的result
 		ResultBean resultBean = new ResultBean();
 		resultBean.setName(this.name);
 		resultBean.setType(this.type);
@@ -94,23 +100,24 @@ public class Plan extends PlanBase{
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
 		resultBean.setFinishTime(lasttime);
+		resultBean.setTaskId(taskId);
 		
 		return resultBean; //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
 	}
 
 	
 	//与时间顺序无关的执行操作（父plan仅会修正完成状态）
-	ResultBean parExecute(){
+	ResultBean parExecute(int taskId, Timestamp beginTime){
 		
 		int state_completed_count = 0; //该plan下完成的子plan个数
 		int state_considered_count = 0; //该plan下一点未完成的子plan个数
 		float score = 0; //得分
 		float fullScore = 0; //满分
-		Timestamp lasttime = new Timestamp(0);
+		Timestamp lasttime = beginTime;
 		
 		//遍历旗下所有的plan
 		for(PlanBase subPlan : this.subPlanList) {
-			ResultBean result = subPlan.execute();
+			ResultBean result = subPlan.execute(taskId, beginTime);
 			
 			//0.记录时间
 			if(result.getFinishTime().getTime() >= lasttime.getTime()) //时间在之后才更新time
@@ -121,26 +128,31 @@ public class Plan extends PlanBase{
 			fullScore += result.getFullScore();
 			
 			//2.修正完成状态
-			if((result.getState()).equals(ResultState.COMPLETED)){ //已完成
-				state_completed_count++;
-			} else if(!(this.mandaPlanSet).contains(AsbruNode.all)
-				   && !(this.mandaPlanSet).contains(subPlan.getName())) { //虽然subPlan未完成，但它不是强制的，也算是完成了，但得分是不会加的了
-				state_completed_count++; 
-			} else if((result.getState()).equals(ResultState.CONSIDERED)){ //未完成
-				state_considered_count++;
+			if((this.mandaPlanSet).contains(AsbruNode.all) || (this.mandaPlanSet).contains(subPlan.getName())){
+				if((result.getState()).equals(ResultState.COMPLETED)){ //完成且是强制的计划才计数，否则不作数
+					state_completed_count++;
+				} else if((result.getState()).equals(ResultState.CONSIDERED)){ //未完成
+					state_considered_count++;
+				}
 			}
 			
 			//3.把Result写入数据库
-			writeResult(result);
+			ResultDAO.write(result);
 		}
 		
-		//包装 得分+完成状态，生成当前这个父plan的result
+		//4.根据子plan的完成数量最终确定这个父plan的完成状态
+		//获得父plan的强制计划数量
+		int expectedCompletedCount = mandaPlanSet.size(); 
+		if(mandaPlanSet.contains(AsbruNode.all)) 
+			expectedCompletedCount = subPlanList.size();
+
 		String state = ResultState.ACTIVATED; //初始化为部分完成
-		if(state_completed_count == this.subPlanList.size()) //全部完成
+		if(state_completed_count == expectedCompletedCount) //全部完成
 			state = ResultState.COMPLETED;
-		else if(state_considered_count == this.subPlanList.size()) //全部未完成
+		else if(state_considered_count == expectedCompletedCount) //全部未完成
 			state = ResultState.CONSIDERED;
-		
+
+		//5.包装： 得分+完成状态，生成当前这个父plan的result
 		ResultBean resultBean = new ResultBean();
 		resultBean.setName(this.name);
 		resultBean.setType(this.type);
@@ -148,6 +160,7 @@ public class Plan extends PlanBase{
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
 		resultBean.setFinishTime(lasttime);
+		resultBean.setTaskId(taskId);
 		
 		return resultBean; //因为与时间顺序无关，所以时间戳是-1
 	}
@@ -178,17 +191,5 @@ public class Plan extends PlanBase{
 
 	public void setMandaPlanSet(Set<String> mandaPlanSet) {
 		this.mandaPlanSet = mandaPlanSet;
-	}
-
-	@Override
-	public String toString() {
-		String res = "——————————————————————————————————\n名称=" + name + ", 类型=" + type + ", 顺序=" + order + "\n子计划:";
-		for(PlanBase subPlan : subPlanList)
-			res += subPlan.getName() + ", ";
-		res += "\n强制计划:";
-		for(String mandaPlanName : mandaPlanSet)
-			res += mandaPlanName + ",";
-		
-		return res;
 	}
 }

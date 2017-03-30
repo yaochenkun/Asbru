@@ -11,6 +11,7 @@ public class ResultBean {
 	private float fullScore; //满分
 	private String state; //完成情况
 	private Timestamp finishTime; //完成时间
+	private int taskId; //对应的总计划（morning/afternoon/evening）
 	
 	
 	@Override
@@ -41,12 +42,15 @@ public class ResultBean {
 	public void setType(String type) {
 		this.type = type;
 	}
+
 	public Timestamp getFinishTime() {
 		return finishTime;
 	}
+
 	public void setFinishTime(Timestamp finishTime) {
 		this.finishTime = finishTime;
 	}
+
 	public float getScore() {
 		return score;
 	}
@@ -65,4 +69,13 @@ public class ResultBean {
 	public void setFullScore(float fullScore) {
 		this.fullScore = fullScore;
 	}
+
+	public int getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(int taskId) {
+		this.taskId = taskId;
+	}
+	
 }

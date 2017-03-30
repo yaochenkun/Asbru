@@ -17,5 +17,6 @@
     <mappers>
   		<mapper class="mapper.ActionMapper"/>
   		<mapper class="mapper.ResultMapper"/>
+  		<mapper class="mapper.TaskMapper"/>
     </mappers>
 </configuration>

@@ -18,14 +18,14 @@ public class Action extends PlanBase{
 	}
 
 	@Override
-	ResultBean execute() {
+	ResultBean execute(int taskId, Timestamp beginTime) {
 		
 		PlanDirector planDirector = PlanDirector.getInstance();
 		
 		String state; //完成状态
 		float score = 0; //得分
 		float fullScore = planDirector.getGainedActionScore(); //满分
-		Timestamp finishTime = new Timestamp(0);
+		Timestamp finishTime = beginTime;
 		
 		//查看输入动作input中是否有该action， 若有则匹配
 		Map<String, List<ActionBean>> inputActionMap = planDirector.getInputActionMap();
@@ -46,6 +46,7 @@ public class Action extends PlanBase{
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
 		resultBean.setFinishTime(finishTime);
+		resultBean.setTaskId(taskId);
 
 		return resultBean;
 	}

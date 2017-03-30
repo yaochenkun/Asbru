@@ -1,17 +1,12 @@
 package plan;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.session.SqlSession;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -20,17 +15,14 @@ import bean.ActionBean;
 import bean.ResultBean;
 import constants.AsbruAttribute;
 import constants.AsbruNode;
-import constants.Type;
-import mapper.ActionMapper;
-import mapper.SqlSessionHelper;
+import dao.ActionDAO;
+import dao.ResultDAO;
 
 //plan导演类，驱动解析与计分过程的执行
 public class PlanDirector {
 	
 	//单例
 	private static PlanDirector instance;
-	
-	private final String xmlFilePath = "morning.xml";
 	
 	//计分常量
 	private final float FULL_SCORE = 100.0f; //总分数
@@ -48,7 +40,7 @@ public class PlanDirector {
 	
 	public PlanDirector() {
 		
-		inputActionMap = new HashMap<String, List<ActionBean>>();
+		this.inputActionMap = new HashMap<String, List<ActionBean>>();
 		this.expandedPlanMap = new HashMap<String, Plan>();
 	}
 	
@@ -60,43 +52,41 @@ public class PlanDirector {
 	}
 	
 	//初始化
-	public void start(Timestamp beginTime, Timestamp endTime){
+	public void start(int taskId, String taskName, Timestamp beginTime, Timestamp endTime){
+		
+		//0.清空一切数据
+		clearData();
 		
 		//1.读取数据库得到input
-		readInputActions(beginTime, endTime);
+		readInputActionsToMap(beginTime, endTime);
 		
 		//2.解析xml得到rootPlan
-		buildRootPlan();
+		buildRootPlan(taskName + ".xml");
 		
 		//3.计算分数
 		initScore();
 		
 		//4.匹配! 
-		ResultBean finalResult = rootPlan.execute();
+		ResultBean finalResult = rootPlan.execute(taskId, beginTime);
 		
 		//5.写入最终结果
-		rootPlan.writeResult(finalResult);	
+		ResultDAO.write(finalResult);	
+	}
+	
+	private void clearData(){
+		
+		this.totalActionNum = 0;
+		this.gainedActionScore = 0.0f;
+		this.penalActionScore = 0.0f;
+		this.rootPlan = null;
+		this.inputActionMap.clear();
+		this.expandedPlanMap.clear();
 	}
 	
 	//从数据库读入用户输入的动作
-	private void readInputActions(Timestamp beginTime, Timestamp endTime) {
-		
-		SqlSession session = null;
-		List<ActionBean> actionBeanList = null;
-		try {
-			session = SqlSessionHelper.getSessionFactory().openSession();
-			ActionMapper mapper = session.getMapper(ActionMapper.class);
-			actionBeanList = mapper.selectActionsByPeriod(beginTime, endTime);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		
-//		for(ActionBean actionBean : actionBeanList) {
-//			System.out.println(actionBean.getId() + "," + actionBean.getName() + "," + actionBean.getTime());
-//		}
-
+	private void readInputActionsToMap(Timestamp beginTime, Timestamp endTime) {
+			
+		List<ActionBean> actionBeanList = ActionDAO.read(beginTime, endTime);
 		
 		//存入inputActionMap中
 		if(actionBeanList != null) {
@@ -111,10 +101,10 @@ public class PlanDirector {
 	}
 	
 	//读取xml文件路径得到rootPlan
-	private void buildRootPlan(){
+	private void buildRootPlan(String xmlFilePath){
 		
 		SAXReader sax = new SAXReader();
-		File xmlFile = new File(this.xmlFilePath);
+		File xmlFile = new File(xmlFilePath);
 		Document document = null;
 		try { 
 			document = sax.read(xmlFile);
@@ -146,9 +136,6 @@ public class PlanDirector {
 		
 		//开始解析
 	    analyzeNode(plansNode, rootPlan);
-	    
-	    //测试：遍历 
-	    //traverse(rootPlan);
 	}
 	
 	//解析node节点，并以parentPlan作为父计划向其中注入解析到的数据
@@ -235,15 +222,15 @@ public class PlanDirector {
 	}
 	
 	//输出内存结果(测试用！)
-	@SuppressWarnings("unused")
-	private void traverse(PlanBase plan) {
-
-		System.out.println(plan.toString());
-		if(plan.getType().equals(Type.PLAN)) {
-			for (PlanBase subPlan : ((Plan) plan).getSubPlanList())
-				traverse(subPlan);
-		}
-	}
+//	@SuppressWarnings("unused")
+//	private void traverse(PlanBase plan) {
+//
+//		System.out.println(plan.toString());
+//		if(plan.getType().equals(Type.PLAN)) {
+//			for (PlanBase subPlan : ((Plan) plan).getSubPlanList())
+//				traverse(subPlan);
+//		}
+//	}
 
 	public int getTotalActionNum() {
 		return totalActionNum;
