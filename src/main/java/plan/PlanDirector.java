@@ -26,11 +26,11 @@ public class PlanDirector {
 	
 	//计分常量
 	private final float FULL_SCORE = 100.0f; //总分数
-	private final float PENAL_ACTION_RATE = 0.2f; //惩罚率
+	private final float PENAL_RATE = 0.5f; //惩罚率
 	
 	private int totalActionNum = 0; //总action数
 	private float gainedActionScore = 0.0f; //每个action分值
-	private float penalActionScore = 0.0f;  //每个action在时间顺序不对时的惩罚分
+	private float penalScore = 0.0f;  //每个plan在时间顺序不对时的惩罚分
 	
 	//计划相关变量
 	private Plan rootPlan;
@@ -67,17 +67,14 @@ public class PlanDirector {
 		initScore();
 		
 		//4.匹配! 
-		ResultBean finalResult = rootPlan.execute(taskId, beginTime);
-		
-		//5.写入最终结果
-		ResultDAO.write(finalResult);	
+		rootPlan.execute(taskId, beginTime);
 	}
 	
 	private void clearData(){
 		
 		this.totalActionNum = 0;
 		this.gainedActionScore = 0.0f;
-		this.penalActionScore = 0.0f;
+		this.penalScore = 0.0f;
 		this.rootPlan = null;
 		this.inputActionMap.clear();
 		this.expandedPlanMap.clear();
@@ -104,6 +101,8 @@ public class PlanDirector {
 	private void buildRootPlan(String xmlFilePath){
 		
 		SAXReader sax = new SAXReader();
+		
+		xmlFilePath = this.getClass().getClassLoader().getResource(xmlFilePath).getPath();
 		File xmlFile = new File(xmlFilePath);
 		Document document = null;
 		try { 
@@ -218,7 +217,7 @@ public class PlanDirector {
 	//计算每个action匹配后的得分与惩罚分
 	private void initScore(){
 		gainedActionScore = FULL_SCORE / totalActionNum;
-		penalActionScore  = gainedActionScore * PENAL_ACTION_RATE;
+		penalScore  = gainedActionScore * PENAL_RATE;
 	}
 	
 	//输出内存结果(测试用！)
@@ -248,12 +247,12 @@ public class PlanDirector {
 		this.gainedActionScore = gainedActionScore;
 	}
 
-	public float getPenalActionScore() {
-		return penalActionScore;
+	public float getPenalScore() {
+		return penalScore;
 	}
 
-	public void setPenalActionScore(float penalActionScore) {
-		this.penalActionScore = penalActionScore;
+	public void setPenalActionScore(float penalScore) {
+		this.penalScore = penalScore;
 	}
 
 	public Map<String, List<ActionBean>> getInputActionMap() {
@@ -263,4 +262,9 @@ public class PlanDirector {
 	public void setInputActionMap(Map<String, List<ActionBean>> inputActionMap) {
 		this.inputActionMap = inputActionMap;
 	}
+
+	public float getPENAL_RATE() {
+		return PENAL_RATE;
+	}
+	
 }

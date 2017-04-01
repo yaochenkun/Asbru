@@ -17,8 +17,7 @@
 <!-- Global CSS -->
 <link rel="stylesheet"
 	href="assets/plugins/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet"
-	href="assets/plugins/bootstrap/css/animate.css">
+<link rel="stylesheet" href="assets/plugins/bootstrap/css/animate.css">
 <!-- Plugins CSS -->
 <link rel="stylesheet"
 	href="assets/plugins/font-awesome/css/font-awesome.css">
@@ -40,9 +39,9 @@
 	<header class="header">
 		<div class="container">
 			<img class="profile-image img-responsive pull-left"
-				src="assets/images/profile.png" alt="Ken" />
+				src="assets/images/profile.png" alt="Binglin Lee" />
 			<div class="profile-content pull-left">
-				<h1 class="name">Ken</h1>
+				<h1 class="name">Binglin Lee</h1>
 				<h2 class="desc">Treatment for Depression Patient</h2>
 				<ul class="social list-inline">
 					<li><a href="#"><i class="fa fa-twitter"></i></a></li>
@@ -122,12 +121,12 @@
 				</section>
 				<!--//section-->
 				<section class="latest section">
-					<div class="section-inner">
+					<div class="section-inner" style="padding-bottom: 1px;">
 						<h2 class="heading">Calendar</h2>
 
 						<div class="content">
 
-							<div class="item featured text-center">
+							<div class="item featured  text-center">
 								<h3 class="title"></h3>
 
 								<div class="control-group">
@@ -147,156 +146,174 @@
 								<a class="btn btn-cta-secondary" href="javascript:void(0)"
 									target="_blank" onclick="diagnose();">diagnose & report</a>
 							</div>
-							<!--//item-->
-							<hr class="divider" />
-							<h2 class="heading">Report</h2>
+						</div>
+					</div>
+				</section>
 
-							<div class="item row">
-								<div class="desc col-md-12 col-sm-12 col-xs-12">
-									<h3 class="title">
-										<a
-											href="http://themes.3rdwavemedia.com/website-templates/responsive-bootstrap-theme-mobile-apps-atom/"
-											target="_blank">Plan1 - Morning</a>
-									</h3>
+				<section class="section">
+					<div class="section-inner">
 
-									<div class="featured-image">
-										<a
-											href="http://themes.3rdwavemedia.com/website-templates/responsive-bootstrap-theme-for-products-velocity/"
-											target="_blank"> <img
-											class="img-responsive project-image"
-											src="assets/images/morning_img.png" alt="project name"
-											style="margin: 0 auto;">
-										</a>
-									</div>
+						<h2 class="heading" style="margin-bottom: 0px;">Report</h2>
 
-									<br>
+						<div class="content">
+							<div class="item featured">
+								<h3 class="title">
+									<a href="javascript:void(0);" target="_blank"
+										style="color: #79d19a;">Task - Morning</a>
+								</h3>
 
-									<div id="chart_div_morning" style="display: none;">
-										<div id="chart_morning_legend" class="chart-legend"></div>
-										<canvas id="chart_morning" width="1100" height="400"></canvas>
-										<blockquote class="quote"
-											style="border-left: 5px solid #79d19a">
-											<span class="title" style="color: #778492;">Final Score:</span> <span
-												class="title" style="color: #79d19a;"><strong
-												id="score_morning"></strong></span> <br> <br> <span
-												class="title" style="color: #778492;">Final Achievement:</span> <span
-												class="title" style="color: #79d19a;"><strong
-												id="achievement_morning"></strong></span> <br>
-										</blockquote>
-										<blockquote class="quote"
-											style="border-left: 5px solid #79d19a">
-
-											<table id="table_morning" class="table table-condensed"
-												style="color: #778492;">
-												<thead>
-													<tr>
-														<th>#</th>
-														<th>Name</th>
-														<th>Type</th>
-														<th>Your Score</th>
-														<th>Full Score</th>
-														<th>Achievement</th>
-														<th>Finished Time</th>
-													</tr>
-												</thead>
-												<tbody></tbody>
-											</table>
-										</blockquote>
-									</div>
+								<div class="featured-image">
+									<a href="javascript:void(0);" target="_blank"> <img
+										class="img-responsive project-image"
+										src="assets/images/morning_img.png" alt="project name"
+										style="margin: 0 auto;">
+									</a>
 								</div>
-								<!--//desc-->
-							</div>
 
-							<hr class="divider" />
-							<!--//item-->
-							<div class="item row">
-								<div class="desc col-md-12 col-sm-12 col-xs-12">
-									<h3 class="title">
-										<a
-											href="http://themes.3rdwavemedia.com/website-templates/responsive-bootstrap-theme-mobile-apps-atom/"
-											target="_blank">Plan2 - Afternoon</a>
-									</h3>
-									<div id="chart_div_afternoon" style="display: none;">
-										<canvas id="chart_afternoon" width="1100" height="400"></canvas>
-										<blockquote class="quote"
-											style="border-left: 5px solid #79d19a">
-											<span class="title" style="color: #778492;">Final Score:</span> <span
-												class="title" style="color: #79d19a;"><strong
-												id="score_afternoon"></strong></span> <br> <br> <span
-												class="title" style="color: #778492;">Final Achievement:</span> <span
-												class="title" style="color: #79d19a;"><strong
-												id="achievement_afternoon"></strong></span> <br>
-										</blockquote>
-										<blockquote class="quote"
-											style="border-left: 5px solid #79d19a">
+								<br>
 
-											<table id="table_afternoon" class="table table-condensed"
-												style="color: #778492;">
-												<thead>
-													<tr>
-														<th>#</th>
-														<th>Name</th>
-														<th>Type</th>
-														<th>Your Score</th>
-														<th>Full Score</th>
-														<th>Achievement</th>
-														<th>Finished Time</th>
-													</tr>
-												</thead>
-												<tbody></tbody>
-											</table>
-										</blockquote>
-									</div>
-								</div>
-								<!--//desc-->
-							</div>
-							<!--//item-->
-							<hr class="divider" />
-							<div class="item row">
-								<div class="desc col-md-12 col-sm-12 col-xs-12">
-									<h3 class="title">
-										<a
-											href="http://themes.3rdwavemedia.com/website-templates/responsive-bootstrap-theme-mobile-apps-atom/"
-											target="_blank">Plan3 - Evening</a>
-									</h3>
-									<div id="chart_div_evening" style="display: none;">
-										<canvas id="chart_evening" width="1100" height="400"></canvas>
-										<blockquote class="quote"
-											style="border-left: 5px solid #79d19a">
-											<span class="title" style="color: #778492;">Final Score:</span> <span
-												class="title" style="color: #79d19a;"><strong
-												id="score_evening"></strong></span> <br> <br> <span
-												class="title" style="color: #778492;">Final Achievement:</span> <span
-												class="title" style="color: #79d19a;"><strong
-												id="achievement_evening"></strong></span> <br>
-										</blockquote>
-										<blockquote class="quote"
-											style="border-left: 5px solid #79d19a">
+								<div id="chart_div_morning" style="display: none;">
+									<div id="chart_morning_legend" class="chart-legend"></div>
+									<canvas id="chart_morning" width="1100" height="400"></canvas>
+									<blockquote class="quote"
+										style="border-left: 5px solid #79d19a">
+										<span class="title" style="color: #778492;">Final
+											Score:</span> <span class="title" style="color: #79d19a;"><strong
+											id="score_morning"></strong></span> <br> <br> <span
+											class="title" style="color: #778492;">Final
+											Achievement:</span> <span class="title" style="color: #79d19a;"><strong
+											id="achievement_morning"></strong></span> <br> <br> <span
+											class="title" style="color: #778492;">Details:</span><br>
+										<br>
 
-											<table id="table_evening" class="table table-condensed">
-												<thead>
-													<tr>
-														<th>#</th>
-														<th>Name</th>
-														<th>Type</th>
-														<th>Your Score</th>
-														<th>Full Score</th>
-														<th>Achievement</th>
-														<th>Finished Time</th>
-													</tr>
-												</thead>
-												<tbody></tbody>
-											</table>
-										</blockquote>
-									</div>
+										<table id="table_morning" class="table table-condensed"
+											style="color: #778492;">
+											<thead>
+												<tr>
+													<th>#</th>
+													<th>Name</th>
+													<th>Type</th>
+													<th>Your Score</th>
+													<th>Full Score</th>
+													<th>Achievement</th>
+													<th>Finished Time</th>
+													<th>Belief</th>
+
+												</tr>
+											</thead>
+											<tbody></tbody>
+										</table>
+									</blockquote>
 								</div>
 							</div>
+							<!--//desc-->
+						</div>
+					</div>
+				</section>
 
+				<section class="section">
+					<div class="section-inner">
+						<h2 class="heading" style="margin-bottom: 0px;">Report</h2>
+						<!--//item-->
+						<div class="content">
+							<div class="item featured">
+								<h3 class="title">
+									<a href="javascript:void(0);" target="_blank"
+										style="color: #79d19a;">Task - Afternoon</a>
+								</h3>
+								<div class="featured-image">
+									<a href="javascript:void(0);" target="_blank"> <img
+										class="img-responsive project-image"
+										src="assets/images/afternoon_img.png" alt="project name"
+										style="margin: 0 auto;">
+									</a>
+								</div>
 
+								<div id="chart_div_afternoon" style="display: none;">
+									<canvas id="chart_afternoon" width="1100" height="400"></canvas>
+									<blockquote class="quote"
+										style="border-left: 5px solid #79d19a">
+										<span class="title" style="color: #778492;">Final
+											Score:</span> <span class="title" style="color: #79d19a;"><strong
+											id="score_afternoon"></strong></span> <br> <br> <span
+											class="title" style="color: #778492;">Final
+											Achievement:</span> <span class="title" style="color: #79d19a;"><strong
+											id="achievement_afternoon"></strong></span> <br> <br> <span
+											class="title" style="color: #778492;">Details:</span><br>
+										<br>
+										<table id="table_afternoon" class="table table-condensed"
+											style="color: #778492;">
+											<thead>
+												<tr>
+													<th>#</th>
+													<th>Name</th>
+													<th>Type</th>
+													<th>Your Score</th>
+													<th>Full Score</th>
+													<th>Achievement</th>
+													<th>Finished Time</th>
+													<th>Belief</th>
 
+												</tr>
+											</thead>
+											<tbody></tbody>
+										</table>
+									</blockquote>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
 
-							<!--//item-->
+				<section class="section">
+					<div class="section-inner">
+						<h2 class="heading" style="margin-bottom: 0px;">Report</h2>
+						<div class="content">
+							<div class="item featured">
+								<h3 class="title">
+									<a href="javascript:void(0);" target="_blank"
+										style="color: #79d19a;">Task - Evening</a>
+								</h3>
 
+								<div class="featured-image">
+									<a href="javascript:void(0);" target="_blank"> <img
+										class="img-responsive project-image"
+										src="assets/images/afternoon_img.png" alt="project name"
+										style="margin: 0 auto;">
+									</a>
+								</div>
+								<div id="chart_div_evening" style="display: none;">
+									<canvas id="chart_evening" width="1100" height="400"></canvas>
+									<blockquote class="quote"
+										style="border-left: 5px solid #79d19a">
+										<span class="title" style="color: #778492;">Final
+											Score:</span> <span class="title" style="color: #79d19a;"><strong
+											id="score_evening"></strong></span> <br> <br> <span
+											class="title" style="color: #778492;">Final
+											Achievement:</span> <span class="title" style="color: #79d19a;"><strong
+											id="achievement_evening"></strong></span> <br> <br> <span
+											class="title" style="color: #778492;">Details:</span><br>
+										<br>
+										<table id="table_evening" class="table table-condensed"
+											style="color: #778492;">
+											<thead>
+												<tr>
+													<th>#</th>
+													<th>Name</th>
+													<th>Type</th>
+													<th>Your Score</th>
+													<th>Full Score</th>
+													<th>Achievement</th>
+													<th>Finished Time</th>
+													<th>Belief</th>
+
+												</tr>
+											</thead>
+											<tbody></tbody>
+										</table>
+									</blockquote>
+								</div>
+							</div>
 						</div>
 						<!--//content-->
 					</div>
@@ -354,6 +371,9 @@
 				forceParse : 0,
 				format : 'yyyy-mm-dd'
 			});
+
+			//idle tooltip
+			$("[data-toggle='tooltip']").tooltip();
 		});
 	</script>
 

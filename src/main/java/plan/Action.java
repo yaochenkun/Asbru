@@ -8,6 +8,7 @@ import bean.ActionBean;
 import bean.ResultBean;
 import constants.ResultState;
 import constants.Type;
+import dao.ResultDAO;
 
 //动作类
 public class Action extends PlanBase{
@@ -26,6 +27,8 @@ public class Action extends PlanBase{
 		float score = 0; //得分
 		float fullScore = planDirector.getGainedActionScore(); //满分
 		Timestamp finishTime = beginTime;
+		float belief = 0.0f; //置信度
+		StringBuilder reason = new StringBuilder(""); //置信理由
 		
 		//查看输入动作input中是否有该action， 若有则匹配
 		Map<String, List<ActionBean>> inputActionMap = planDirector.getInputActionMap();
@@ -34,9 +37,13 @@ public class Action extends PlanBase{
 			state = ResultState.COMPLETED;
 			finishTime = inputActionMap.get(this.name).get(0).getTime(); //获取时间
 			inputActionMap.get(this.name).remove(0); //删除该输入动作，减轻后面查询负担
+			belief = 1.0f;
+			reason.append(this.name).append(" - <b class='text-success'>completed</b><br>");
 		} else {
 			score = 0;
 			state = ResultState.CONSIDERED;
+			belief = 0.0f;
+			reason.append(this.name).append(" - <b class='text-error'>considered</b><br>");
 		}
 
 		ResultBean resultBean = new ResultBean();
@@ -46,8 +53,11 @@ public class Action extends PlanBase{
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
 		resultBean.setFinishTime(finishTime);
+		resultBean.setBelief(belief);
+		resultBean.setReason(reason.toString());
 		resultBean.setTaskId(taskId);
-
+		
+		ResultDAO.write(resultBean);
 		return resultBean;
 	}
 

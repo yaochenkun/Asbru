@@ -11,18 +11,28 @@ public class ResultBean {
 	private float fullScore; //满分
 	private String state; //完成情况
 	private Timestamp finishTime; //完成时间
+	private float belief; //置信度
+	private String reason; //置信理由
 	private int taskId; //对应的总计划（morning/afternoon/evening）
-	
-	
-	@Override
-	public String toString() {
-
-		String res = "名称=" + name + ", 类型=" + type + ", 完成情况=" + state + ", 得分=" + score + ", 满分=" + fullScore + ", 时间=" + finishTime;
-		return res;
-	}
 
 	public int getId() {
 		return id;
+	}
+
+	public float getBelief() {
+		return belief;
+	}
+
+	public void setBelief(float belief) {
+		this.belief = belief;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 
 	public void setId(int id) {

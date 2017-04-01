@@ -66,7 +66,7 @@
                     <variable-assignment variable="enter kitchen">
                     </variable-assignment>
                     <plan-activation>
-                        <plan-schema name="prepare breakfast"/>
+                        <plan-schema name="preparing breakfast"/>
                     </plan-activation>
                     <variable-assignment variable="eat">
                     </variable-assignment>
@@ -90,7 +90,7 @@
                 </subplans>
             </plan-body>
         </plan>
-        <plan name="prepare breakfast" title="">
+        <plan name="preparing breakfast" title="">
             <plan-body>
                 <subplans type="sequentially">
                     <wait-for>

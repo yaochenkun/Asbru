@@ -92,9 +92,11 @@ function showStatistics(time, resultList) {
     	var scene_class = getSceneClass(resultList[i].state); //情景
     	var type_class = getTypeClass(resultList[i].type); //plan/action
     	var finish_class = getFinishClass(resultList[i].state); //完成与否
+    	var belief_class = getBeliefClass(resultList[i].state); //情景链接
     	
-    	table.append(getTableRow(scene_class, type_class, finish_class, resultList[i], i + 1));
+    	table.append(getTableRow(scene_class, type_class, finish_class, belief_class, resultList[i], i + 1));
     }
+    initBootstrapPopovers();
 }
 
 
@@ -128,8 +130,18 @@ function getFinishClass(finish){
 	return finish_class;
 }
 
+//获得置信度链接字体的情景类
+function getBeliefClass(state){
+	var belief_class = "text-error";
+	if(state == "completed")
+		belief_class = "text-success";
+	else if(state == "activated")
+		belief_class = "text-warning";
+	return belief_class;
+}
+
 //加工得到表格行的html代码
-function getTableRow(scene_class, type_class, finish_class, result, index){
+function getTableRow(scene_class, type_class, finish_class, belief_class, result, index){
 	
 	return '<tr class="'+ scene_class +'">'+
 				'<th scope="row">'+ index +'</th>' +
@@ -139,6 +151,7 @@ function getTableRow(scene_class, type_class, finish_class, result, index){
 				'<td>'+ result.fullScore +'</td>'+
 				'<td><span class="'+ finish_class +'"></span></td>' +
 				'<td>'+ formatDate(new Date(result.finishTime)) +'</td>'+
+				'<td><a class="'+ belief_class + '" href="javascript:void(0);" target="_blank" data-toggle="popover" data-placement="left" data-content="'+ result.reason +'" onclick="hideOtherPopovers();">'+ result.belief * 100 +'%</a></td>' +
 			'</tr>';
 }
 
@@ -160,7 +173,7 @@ function successNotify(message) {
 	$.notify({
 		message: message,
 	},{
-		type: 'success',
+		type: 'info',
 		placement: {
 			from: "top",
 			align: "center"
@@ -178,4 +191,12 @@ function dangerNotify(message) {
 			align: "center"
 		}
 	});
+}
+
+function initBootstrapPopovers(){
+	$("[data-toggle='popover']").popover({html:true}); //打开换行识别
+}
+
+function hideOtherPopovers() {
+	$("[data-toggle='popover']").popover('hide')
 }

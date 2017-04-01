@@ -13,7 +13,7 @@ import bean.ResultBean;
 
 public interface ResultMapper {
 	
-	@Insert("INSERT INTO result (id, name, type, score, fullScore, state, finishTime, taskId) VALUES (#{id}, #{name}, #{type}, #{score}, #{fullScore}, #{state}, #{finishTime}, #{taskId})")
+	@Insert("INSERT INTO result (id, name, type, score, fullScore, state, finishTime, belief, reason, taskId) VALUES (#{id}, #{name}, #{type}, #{score}, #{fullScore}, #{state}, #{finishTime}, #{belief}, #{reason}, #{taskId})")
 	@Options(useGeneratedKeys = true)
 	void addResultBean(ResultBean resultBean);
 	

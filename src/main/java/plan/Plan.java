@@ -44,11 +44,15 @@ public class Plan extends PlanBase{
 	//与时间顺序有关的执行操作（父plan会根据时间顺序对不对修正得分 + 另外修正完成状态）
 	ResultBean seqExecute(int taskId, Timestamp beginTime){
 		
-		int state_completed_count = 0; //该plan下完成的子plan个数
-		int state_considered_count = 0; //该plan下一点未完成的子plan个数
+		PlanDirector planDirector = PlanDirector.getInstance();
+		
+		float state_completed_count = 0; //该plan下完成的子plan个数
+		int   state_considered_count = 0; //该plan下一点未完成的子plan个数
 		float score = 0; //得分
 		float fullScore = 0; //满分
 		Timestamp lasttime = beginTime; //完成时间
+		float belief = 0.0f; //置信度
+		StringBuilder reason = new StringBuilder(""); //置信理由
 
 		//遍历旗下所有的plan
 		for(PlanBase subPlan : this.subPlanList) {
@@ -60,7 +64,7 @@ public class Plan extends PlanBase{
 				if(result.getFinishTime().getTime() >= lasttime.getTime()){ //时间在之后，对的，更新time
 					lasttime = result.getFinishTime();
 				} else { //时间在之前，不对，不更新time，扣分
-					result.setScore(result.getScore() - PlanDirector.getInstance().getPenalActionScore());
+					result.setScore(result.getScore() - planDirector.getPenalScore());
 					penalty = true;
 				}
 			}
@@ -71,23 +75,33 @@ public class Plan extends PlanBase{
 			if((this.mandaPlanSet).contains(AsbruNode.all) || (this.mandaPlanSet).contains(subPlan.getName())){
 				if(	penalty == false && (result.getState()).equals(ResultState.COMPLETED)){ //完成且是强制的计划才计数，否则不作数
 					state_completed_count++;
+					reason.append(result.getName()).append(" - <b class='text-success'>completed</b><br>"); 
 				} else if((result.getState()).equals(ResultState.CONSIDERED)){ //未完成
 					state_considered_count++;
+					reason.append(result.getName()).append(" - <b class='text-error'>considered</b><br>");
+				} else {
+					//半完成
+					state_completed_count += 1 - planDirector.getPENAL_RATE(); //惩罚，加不了一个，只能加半个
+					if(penalty == true)
+						reason.append(result.getName()).append(" - <b class='text-warning'>activated & break sequence</b><br>");
+					else 
+						reason.append(result.getName()).append(" - <b class='text-warning'>activated</b><br>");
 				}
 			}
-			
-			//3.把Result写入数据库
-			ResultDAO.write(result);
 		}
 		
-		//4.根据子plan的完成数量最终确定这个父plan的完成状态
+		//4.根据子plan的完成数量最终确定这个父plan的完成状态、置信度
 		//获得父plan的强制计划数量
 		int expectedCompletedCount = mandaPlanSet.size(); 
 		if(mandaPlanSet.contains(AsbruNode.all)) 
 			expectedCompletedCount = subPlanList.size();
-
+		
+		//4.1 计算置信度
+		belief = state_completed_count / expectedCompletedCount;
+		
+		//4.2 计算完成状态
 		String state = ResultState.ACTIVATED; //初始化为部分完成
-		if(state_completed_count == expectedCompletedCount) //全部完成
+		if((int)state_completed_count == expectedCompletedCount) //全部完成
 			state = ResultState.COMPLETED;
 		else if(state_considered_count == expectedCompletedCount) //全部未完成
 			state = ResultState.CONSIDERED;
@@ -99,21 +113,29 @@ public class Plan extends PlanBase{
 		resultBean.setScore(score);
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
-		resultBean.setFinishTime(lasttime);
+		resultBean.setFinishTime(lasttime); //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
+		resultBean.setBelief(belief);
+		resultBean.setReason(reason.toString());
 		resultBean.setTaskId(taskId);
-		
-		return resultBean; //因为与时间顺序有关，所以时间戳是最后一个有效子plan的完成时间time
+				
+		//6.把Result写入数据库
+		ResultDAO.write(resultBean);
+		return resultBean;
 	}
 
 	
 	//与时间顺序无关的执行操作（父plan仅会修正完成状态）
 	ResultBean parExecute(int taskId, Timestamp beginTime){
+
+		PlanDirector planDirector = PlanDirector.getInstance();
 		
 		int state_completed_count = 0; //该plan下完成的子plan个数
 		int state_considered_count = 0; //该plan下一点未完成的子plan个数
 		float score = 0; //得分
 		float fullScore = 0; //满分
 		Timestamp lasttime = beginTime;
+		float belief = 0.0f; //置信度
+		String reason = ""; //置信理由
 		
 		//遍历旗下所有的plan
 		for(PlanBase subPlan : this.subPlanList) {
@@ -131,13 +153,16 @@ public class Plan extends PlanBase{
 			if((this.mandaPlanSet).contains(AsbruNode.all) || (this.mandaPlanSet).contains(subPlan.getName())){
 				if((result.getState()).equals(ResultState.COMPLETED)){ //完成且是强制的计划才计数，否则不作数
 					state_completed_count++;
+					reason += result.getName() + " - <b class='text-success'>completed</b><br>"; 
 				} else if((result.getState()).equals(ResultState.CONSIDERED)){ //未完成
 					state_considered_count++;
+					reason += result.getName() + " - <b class='text-error'>considered</b><br>"; 
+				} else {
+					//半完成
+					state_completed_count += 1 - planDirector.getPENAL_RATE(); //惩罚，加不了一个，只能加半个
+					reason += result.getName() + " - <b class='text-warning'>activated</b><br>";
 				}
 			}
-			
-			//3.把Result写入数据库
-			ResultDAO.write(result);
 		}
 		
 		//4.根据子plan的完成数量最终确定这个父plan的完成状态
@@ -146,8 +171,12 @@ public class Plan extends PlanBase{
 		if(mandaPlanSet.contains(AsbruNode.all)) 
 			expectedCompletedCount = subPlanList.size();
 
+		//4.1 计算置信度
+		belief = state_completed_count / expectedCompletedCount;
+		
+		//4.2 计算完成状态
 		String state = ResultState.ACTIVATED; //初始化为部分完成
-		if(state_completed_count == expectedCompletedCount) //全部完成
+		if((int)state_completed_count == expectedCompletedCount) //全部完成
 			state = ResultState.COMPLETED;
 		else if(state_considered_count == expectedCompletedCount) //全部未完成
 			state = ResultState.CONSIDERED;
@@ -160,9 +189,13 @@ public class Plan extends PlanBase{
 		resultBean.setFullScore(fullScore);
 		resultBean.setState(state);
 		resultBean.setFinishTime(lasttime);
+		resultBean.setBelief(belief);
+		resultBean.setReason(reason);
 		resultBean.setTaskId(taskId);
-		
-		return resultBean; //因为与时间顺序无关，所以时间戳是-1
+
+		//6.把Result写入数据库
+		ResultDAO.write(resultBean);
+		return resultBean; 
 	}
 	
 	
