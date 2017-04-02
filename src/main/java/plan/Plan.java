@@ -97,7 +97,7 @@ public class Plan extends PlanBase{
 			expectedCompletedCount = subPlanList.size();
 		
 		//4.1 计算置信度
-		belief = state_completed_count / expectedCompletedCount;
+		belief = state_completed_count * 1.0f / expectedCompletedCount;
 		
 		//4.2 计算完成状态
 		String state = ResultState.ACTIVATED; //初始化为部分完成
@@ -172,8 +172,8 @@ public class Plan extends PlanBase{
 			expectedCompletedCount = subPlanList.size();
 
 		//4.1 计算置信度
-		belief = state_completed_count / expectedCompletedCount;
-		
+		belief = state_completed_count * 1.0f / expectedCompletedCount;
+
 		//4.2 计算完成状态
 		String state = ResultState.ACTIVATED; //初始化为部分完成
 		if((int)state_completed_count == expectedCompletedCount) //全部完成
