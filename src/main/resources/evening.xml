@@ -1,5 +1,5 @@
 <plan-library>
-    <library-info title="NewPlanLibrary">
+    <library-info title="Task_Evening_Library">
         <administrative-data original-author="AsbruViewNew"/>
     </library-info>
     <domain-defs>
@@ -9,36 +9,128 @@
     </domain-defs>
     <plans>
         <plan-group/>
-        <plan name="morning" title="">
+        <plan name="evening" title="">
             <plan-body>
                 <subplans type="sequentially">
                     <wait-for>
-                        <wait-for-group>
-                            <static-plan-pointer plan-name="geting up"/>
-                            <static-plan-pointer plan-name="breakfast"/>
-                            <static-plan-pointer plan-name="cleaning"/>
-                        </wait-for-group>
+                        <static-plan-pointer plan-name="dinner"/>
+                        <static-plan-pointer plan-name="relaxing"/>
+                        <static-plan-pointer plan-name="schedule"/>
+                        <static-plan-pointer plan-name="getting washed"/>
+                        <static-plan-pointer plan-name="going to bed"/>
                     </wait-for>
                     <plan-activation>
-                        <plan-schema name="geting up"/>
+                        <plan-schema name="dinner"/>
                     </plan-activation>
                     <plan-activation>
-                        <plan-schema name="breakfast"/>
+                        <plan-schema name="relaxing"/>
                     </plan-activation>
-                    <variable-assignment variable="run">
-                    </variable-assignment>
                     <plan-activation>
-                        <plan-schema name="entertainment"/>
+                        <plan-schema name="calling parents"/>
                     </plan-activation>
-                    <variable-assignment variable="read book">
-                    </variable-assignment>
                     <plan-activation>
-                        <plan-schema name="cleaning"/>
+                        <plan-schema name="schedule"/>
+                    </plan-activation>
+                    <plan-activation>
+                        <plan-schema name="getting washed"/>
+                    </plan-activation>
+                    <plan-activation>
+                        <plan-schema name="going to bed"/>
                     </plan-activation>
                 </subplans>
             </plan-body>
         </plan>
-        <plan name="geting up" title="">
+        <plan name="dinner" title="">
+            <plan-body>
+                <subplans type="sequentially">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <plan-activation>
+                        <plan-schema name="order takeout"/>
+                    </plan-activation>
+                    <variable-assignment variable="enter kitchen">
+                    </variable-assignment>
+                    <variable-assignment variable="eat">
+                    </variable-assignment>
+                    <variable-assignment variable="leave kitchen">
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="order takeout" title="">
+            <plan-body>
+                <subplans type="sequentially">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <variable-assignment variable="call restaurant">
+                    </variable-assignment>
+                    <variable-assignment variable="select food">
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="relaxing" title="">
+            <plan-body>
+                <subplans type="parallel">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <variable-assignment variable="go for a walk">
+                    </variable-assignment>
+                    <variable-assignment variable="watch movie">
+                    </variable-assignment>
+                    <variable-assignment variable="surf the internet">
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="calling parents" title="">
+            <plan-body>
+                <subplans type="sequentially">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <variable-assignment variable="greet">
+                    </variable-assignment>
+                    <variable-assignment variable="chat something funny">
+                    </variable-assignment>
+                    <variable-assignment variable="farewell">
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="schedule" title="">
+            <plan-body>
+                <subplans type="sequentially">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <variable-assignment variable="record progress">
+                    </variable-assignment>
+                    <plan-activation>
+                        <plan-schema name="making schedule"/>
+                    </plan-activation>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="making schedule" title="">
+            <plan-body>
+                <subplans type="sequentially">
+                    <wait-for>
+                        <all/>
+                    </wait-for>
+                    <variable-assignment variable="make goals">
+                    </variable-assignment>
+                    <variable-assignment variable="give reasons">
+                    </variable-assignment>
+                    <variable-assignment variable="set deadlines">
+                    </variable-assignment>
+                </subplans>
+            </plan-body>
+        </plan>
+        <plan name="getting washed" title="">
             <plan-body>
                 <subplans type="sequentially">
                     <wait-for>
@@ -52,112 +144,26 @@
                     </variable-assignment>
                     <variable-assignment variable="wash face">
                     </variable-assignment>
+                    <variable-assignment variable="wash feet">
+                    </variable-assignment>
                     <variable-assignment variable="leave bathroom">
                     </variable-assignment>
                 </subplans>
             </plan-body>
         </plan>
-        <plan name="breakfast" title="">
+        <plan name="going to bed" title="">
             <plan-body>
                 <subplans type="sequentially">
                     <wait-for>
                         <all/>
                     </wait-for>
-                    <variable-assignment variable="enter kitchen">
+                    <variable-assignment variable="turn on the light">
                     </variable-assignment>
-                    <plan-activation>
-                        <plan-schema name="prepare breakfast"/>
-                    </plan-activation>
-                    <variable-assignment variable="eat">
+                    <variable-assignment variable="read books">
                     </variable-assignment>
-                    <variable-assignment variable="leave kitchen">
+                    <variable-assignment variable="turn off the light">
                     </variable-assignment>
-                </subplans>
-            </plan-body>
-        </plan>
-        <plan name="entertainment" title="">
-            <plan-body>
-                <subplans type="parallel">
-                    <wait-for>
-                        <all/>
-                    </wait-for>
-                    <variable-assignment variable="sing">
-                    </variable-assignment>
-                    <variable-assignment variable="play game">
-                    </variable-assignment>
-                    <variable-assignment variable="watch TV">
-                    </variable-assignment>
-                </subplans>
-            </plan-body>
-        </plan>
-        <plan name="prepare breakfast" title="">
-            <plan-body>
-                <subplans type="sequentially">
-                    <wait-for>
-                        <all/>
-                    </wait-for>
-                    <variable-assignment variable="open fridge">
-                    </variable-assignment>
-                    <variable-assignment variable="find food">
-                    </variable-assignment>
-                    <variable-assignment variable="close fridge">
-                    </variable-assignment>
-                    <variable-assignment variable="cook food">
-                    </variable-assignment>
-                </subplans>
-            </plan-body>
-        </plan>
-        <plan name="cleaning" title="">
-            <plan-body>
-                <subplans type="sequentially">
-                    <wait-for>
-                         <static-plan-pointer plan-name="cleaning floor"/>
-                    </wait-for>
-                    <variable-assignment variable="open window">
-                    </variable-assignment>
-                    <plan-activation>
-                        <plan-schema name="cleaning floor"/>
-                    </plan-activation>
-                    <variable-assignment variable="wipe furniture">
-                    </variable-assignment>
-                    <variable-assignment variable="empty trash">
-                    </variable-assignment>
-                    <plan-activation>
-                        <plan-schema name="washing clothes"/>
-                    </plan-activation>
-                </subplans>
-            </plan-body>
-        </plan>
-        <plan name="cleaning floor" title="">
-            <plan-body>
-                <subplans type="sequentially">
-                    <wait-for>
-                        <all/>
-                    </wait-for>
-                    <variable-assignment variable="sweep floor">
-                    </variable-assignment>
-                    <variable-assignment variable="mod floor">
-                    </variable-assignment>
-                </subplans>
-            </plan-body>
-        </plan>
-        <plan name="washing clothes" title="">
-            <plan-body>
-                <subplans type="sequentially">
-                    <wait-for>
-                        <all/>
-                    </wait-for>
-                    <variable-assignment variable="enter washroom">
-                    </variable-assignment>
-                    <variable-assignment variable="take dirty clothes">
-                    </variable-assignment>
-                    <variable-assignment variable="wash clothes">
-                    </variable-assignment>
-                    <variable-assignment variable="wring clothes">
-                    </variable-assignment>
-                    <variable-assignment variable="leave washroom">
-                    </variable-assignment>
-                    <variable-assignment variable="sun clothes">
+                    <variable-assignment variable="sleep">
                     </variable-assignment>
                 </subplans>
             </plan-body>

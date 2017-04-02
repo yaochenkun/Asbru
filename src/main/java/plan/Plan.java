@@ -83,7 +83,7 @@ public class Plan extends PlanBase{
 					//半完成
 					state_completed_count += 1 - planDirector.getPENAL_RATE(); //惩罚，加不了一个，只能加半个
 					if(penalty == true)
-						reason.append(result.getName()).append(" - <b class='text-warning'>activated & break sequence</b><br>");
+						reason.append(result.getName()).append(" - <b class='text-warning'>activated and break time order</b><br>");
 					else 
 						reason.append(result.getName()).append(" - <b class='text-warning'>activated</b><br>");
 				}

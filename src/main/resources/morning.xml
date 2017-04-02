@@ -1,5 +1,5 @@
 <plan-library>
-    <library-info title="NewPlanLibrary">
+    <library-info title="Task_Morning_Library">
         <administrative-data original-author="AsbruViewNew"/>
     </library-info>
     <domain-defs>
@@ -14,13 +14,13 @@
                 <subplans type="sequentially">
                     <wait-for>
                         <wait-for-group>
-                            <static-plan-pointer plan-name="geting up"/>
+                            <static-plan-pointer plan-name="getting up"/>
                             <static-plan-pointer plan-name="breakfast"/>
                             <static-plan-pointer plan-name="cleaning"/>
                         </wait-for-group>
                     </wait-for>
                     <plan-activation>
-                        <plan-schema name="geting up"/>
+                        <plan-schema name="getting up"/>
                     </plan-activation>
                     <plan-activation>
                         <plan-schema name="breakfast"/>
@@ -30,7 +30,7 @@
                     <plan-activation>
                         <plan-schema name="entertainment"/>
                     </plan-activation>
-                    <variable-assignment variable="read book">
+                    <variable-assignment variable="read books">
                     </variable-assignment>
                     <plan-activation>
                         <plan-schema name="cleaning"/>
@@ -38,7 +38,7 @@
                 </subplans>
             </plan-body>
         </plan>
-        <plan name="geting up" title="">
+        <plan name="getting up" title="">
             <plan-body>
                 <subplans type="sequentially">
                     <wait-for>

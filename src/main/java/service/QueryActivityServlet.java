@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class QueryActivityServlet extends HttpServlet {
 			response.getWriter().print("<h1>No XML File has been found.</h1>");
 		
 		//3.解析每个计划文件+匹配
-		Map<String, List<ResultBean>> jsonMap = new HashMap<String, List<ResultBean>>();
+		List<List<ResultBean>> jsonList = new ArrayList<List<ResultBean>>();
 		for(TaskBean taskBean : taskBeanList){
 			
 			Timestamp beginTime = getTime(beginOfDayTime, taskBean.getBeginTime());
@@ -62,13 +63,13 @@ public class QueryActivityServlet extends HttpServlet {
 			}
 			
 			//装入Map
-			jsonMap.put(taskName, resultBeanList);
+			jsonList.add(resultBeanList);
 		}
 
 		
 		//4.把查询结果包装成JSON
 		ObjectMapper jsonMapper = new ObjectMapper();
-		String jsonStr = jsonMapper.writeValueAsString(jsonMap);
+		String jsonStr = jsonMapper.writeValueAsString(jsonList);
 
 		
 		//5.返回并回显至前端

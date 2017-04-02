@@ -278,7 +278,7 @@
 								<div class="featured-image">
 									<a href="javascript:void(0);" target="_blank"> <img
 										class="img-responsive project-image"
-										src="assets/images/afternoon_img.png" alt="project name"
+										src="assets/images/evening_img.png" alt="project name"
 										style="margin: 0 auto;">
 									</a>
 								</div>

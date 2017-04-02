@@ -1,3 +1,6 @@
+var tasknames = new Array('morning','afternoon','evening');
+
+
 function diagnose(){
 	
 	//获取用户选择的起始日期
@@ -17,18 +20,17 @@ function diagnose(){
 	        },
 	        success:function(data){
 	        	
-	            resultMap = eval('('+data+')'); //将json字符串转换成bean对象
-	            if(isNull(resultMap)) {
+	        	resultList = eval('('+data+')'); //将json字符串转换成bean对象
+	            if(isNull(resultList)) {
 	            	dangerNotify("Diagnose failed.");
 	            	return;
 	            }
 	            
 	            successNotify("Diagnose success! Please check your report below.");
 	            
-	            showStatistics("morning", resultMap.morning);
-	            showStatistics("afternoon", resultMap.afternoon);
-	            showStatistics("evening", resultMap.evening);
-	            
+	            for(var i = 0; i < resultList.length; i++)
+		            showStatistics(tasknames[i], resultList[i]);
+
 	        }
 	    });	
 	}	
@@ -173,7 +175,7 @@ function successNotify(message) {
 	$.notify({
 		message: message,
 	},{
-		type: 'info',
+		type: 'success',
 		placement: {
 			from: "top",
 			align: "center"
