@@ -54,7 +54,7 @@
 			</div>
 			<!--//profile-->
 			<a class="btn btn-cta-primary pull-right"
-				href="http://yaochenkun.cn/" target="_blank"><i
+				href="#" target="_blank"><i
 				class="fa fa-paper-plane"></i> Contact Me</a>
 		</div>
 		<!--//container-->
