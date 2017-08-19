@@ -26,5 +26,4 @@ public class ActionBean {
 	public void setTime(Timestamp time) {
 		this.time = time;
 	}
-	
 }

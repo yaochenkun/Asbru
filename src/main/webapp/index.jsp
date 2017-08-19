@@ -53,8 +53,7 @@
 				</ul>
 			</div>
 			<!--//profile-->
-			<a class="btn btn-cta-primary pull-right"
-				href="#" target="_blank"><i
+			<a class="btn btn-cta-primary pull-right" href="#" target="_blank"><i
 				class="fa fa-paper-plane"></i> Contact Me</a>
 		</div>
 		<!--//container-->
